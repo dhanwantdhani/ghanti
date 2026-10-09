@@ -1,0 +1,9 @@
+.venv/
+.env
+.aws-sam/
+__pycache__/
+*.pyc
+frontend.zip
+backend/seed/replay_week.json
+samconfig.toml
+.DS_Store

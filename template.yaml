@@ -1,0 +1,181 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Ghanti - tomorrow's outdoor call for one school. Four scheduled Lambdas, one API, three tables.
+
+Parameters:
+  OpenAqApiKey:
+    Type: String
+    NoEcho: true
+  TelegramBotToken:
+    Type: String
+    NoEcho: true
+    Default: ""
+  WaqiToken:
+    Type: String
+    NoEcho: true
+    Default: ""
+  BedrockModelId:
+    Type: String
+    Default: amazon.nova-lite-v1:0
+  LiveSchoolId:
+    Type: String
+    Default: demo-school
+  PublicBaseUrl:
+    Type: String
+    Default: ""
+    Description: The Amplify URL, used to build teacher links. Set after the first frontend deploy.
+  SmsNumbers:
+    Type: String
+    Default: ""
+    Description: Comma-separated E.164 numbers verified in the SNS sandbox. Video only.
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 60
+    MemorySize: 512
+    CodeUri: backend/
+    Environment:
+      Variables:
+        SCHOOLS_TABLE: !Ref SchoolsTable
+        CALLS_TABLE: !Ref CallsTable
+        READINGS_TABLE: !Ref ReadingsTable
+        OPENAQ_API_KEY: !Ref OpenAqApiKey
+        TELEGRAM_BOT_TOKEN: !Ref TelegramBotToken
+        WAQI_TOKEN: !Ref WaqiToken
+        BEDROCK_MODEL_ID: !Ref BedrockModelId
+        LIVE_SCHOOL_ID: !Ref LiveSchoolId
+        PUBLIC_BASE_URL: !Ref PublicBaseUrl
+        SMS_NUMBERS: !Ref SmsNumbers
+
+Resources:
+
+  SchoolsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: school_id, AttributeType: S }
+      KeySchema:
+        - { AttributeName: school_id, KeyType: HASH }
+
+  CallsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: school_id, AttributeType: S }
+        - { AttributeName: sk, AttributeType: S }
+        - { AttributeName: token, AttributeType: S }
+      KeySchema:
+        - { AttributeName: school_id, KeyType: HASH }
+        - { AttributeName: sk, KeyType: RANGE }
+      GlobalSecondaryIndexes:
+        - IndexName: TokenIndex
+          KeySchema:
+            - { AttributeName: token, KeyType: HASH }
+          Projection: { ProjectionType: ALL }
+
+  ReadingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: station_id, AttributeType: S }
+        - { AttributeName: ts_hour, AttributeType: S }
+      KeySchema:
+        - { AttributeName: station_id, KeyType: HASH }
+        - { AttributeName: ts_hour, KeyType: RANGE }
+
+  RecordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.record.handler
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref SchoolsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref ReadingsTable }
+      Events:
+        Hourly:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: cron(7 * * * ? *)
+            ScheduleExpressionTimezone: Asia/Kolkata
+
+  PlanFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.plan.handler
+      Timeout: 120
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref SchoolsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref CallsTable }
+        - Statement:
+            - Effect: Allow
+              Action: [ "bedrock:InvokeModel", "bedrock:Converse" ]
+              Resource: "*"
+            - Effect: Allow
+              Action: [ "sns:Publish" ]
+              Resource: "*"
+      Events:
+        Evening:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: cron(0 18 * * ? *)
+            ScheduleExpressionTimezone: Asia/Kolkata
+
+  RecheckFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.recheck.handler
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref SchoolsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref CallsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref ReadingsTable }
+      Events:
+        Morning:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: cron(10 6 * * ? *)
+            ScheduleExpressionTimezone: Asia/Kolkata
+
+  VerifyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.verify.handler
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref SchoolsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref CallsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref ReadingsTable }
+      Events:
+        Afternoon:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: cron(0 15 * * ? *)
+            ScheduleExpressionTimezone: Asia/Kolkata
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers.api.handler
+      Timeout: 30
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref SchoolsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref CallsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref ReadingsTable }
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins: [ "*" ]
+          AllowMethods: [ GET, POST ]
+          AllowHeaders: [ "*" ]
+
+Outputs:
+  ApiUrl:
+    Description: Paste this into frontend/index.html as API_BASE
+    Value: !GetAtt ApiFunctionUrl.FunctionUrl
+  SchoolsTableName:
+    Value: !Ref SchoolsTable
+  CallsTableName:
+    Value: !Ref CallsTable
+  ReadingsTableName:
+    Value: !Ref ReadingsTable

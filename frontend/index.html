@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ghanti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --accent:#1d4ed8;
+          --good:#2e7d32; --sat:#7cb342; --mod:#f9a825; --poor:#ef6c00; --vpoor:#c62828; --severe:#6a1b4d; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Inter, system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:20px 16px 8px; max-width:960px; margin:0 auto; }
+  header h1 { margin:0; font-size:26px; letter-spacing:-0.02em; }
+  header p { margin:6px 0 0; color:var(--muted); }
+  nav { max-width:960px; margin:12px auto 0; padding:0 16px; display:flex; gap:8px; flex-wrap:wrap; }
+  nav a { text-decoration:none; color:var(--ink); background:var(--card); border:1px solid var(--line); padding:8px 12px; border-radius:999px; font-size:14px; }
+  nav a.active { background:var(--ink); color:#fff; border-color:var(--ink); }
+  main { max-width:960px; margin:0 auto; padding:16px; }
+  .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; border-top:6px solid var(--line); }
+  .card h3 { margin:0 0 4px; font-size:16px; }
+  .card .num { font-size:30px; font-weight:700; letter-spacing:-0.02em; }
+  .card .band { color:var(--muted); font-size:13px; }
+  .call { display:inline-block; margin-top:8px; padding:4px 10px; border-radius:8px; font-weight:600; font-size:13px; background:#eef2ff; color:#1e3a8a; }
+  .call.INDOORS { background:#fee2e2; color:#7f1d1d; } .call.MOVE { background:#fef3c7; color:#78350f; }
+  .call.OUTDOORS { background:#dcfce7; color:#14532d; } .call.CAUTION { background:#ffedd5; color:#7c2d12; }
+  .reason { margin:8px 0 0; font-size:13px; color:var(--muted); }
+  .status { font-size:12px; margin-top:8px; color:var(--muted); }
+  .Good{border-top-color:var(--good)} .Satisfactory{border-top-color:var(--sat)} .Moderate{border-top-color:var(--mod)}
+  .Poor{border-top-color:var(--poor)} .Very.Poor,.VeryPoor{border-top-color:var(--vpoor)} .Severe{border-top-color:var(--severe)}
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-top:16px; }
+  .panel h2 { margin:0 0 8px; font-size:16px; }
+  .honest { font-size:13px; color:var(--muted); line-height:1.5; }
+  .phone { width:300px; border:10px solid #111; border-radius:28px; padding:16px 12px; background:#fff; font-size:13px; white-space:pre-wrap; line-height:1.45; }
+  .row { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
+  table { width:100%; border-collapse:collapse; font-size:13px; } th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); }
+  button { font:inherit; padding:8px 12px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  button.danger { background:#fff; color:#991b1b; border-color:#fecaca; }
+  input, select { font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:8px; width:100%; }
+  label { font-size:12px; color:var(--muted); display:block; margin-bottom:2px; }
+  .tag { display:inline-block; background:#111; color:#fff; font-size:11px; padding:2px 8px; border-radius:999px; letter-spacing:0.04em; }
+  .muted { color:var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Ghanti</h1>
+  <p>Every evening, one PE teacher gets tomorrow's call: outdoors, indoors, or a later period. Every afternoon, Ghanti checks whether the call was right.</p>
+</header>
+<nav id="nav"></nav>
+<main id="app">Loading...</main>
+
+<script>
+// Paste the ApiUrl output of "sam deploy" here (keep the trailing slash off).
+const API_BASE = "https://oa3u4obp7wawhdcytx6v6cpvb40fqavt.lambda-url.ap-south-1.on.aws";
+
+const $ = (sel) => document.querySelector(sel);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const bandClass = (b) => (b || "").replace(" ", "");
+const api = async (path, opts) => {
+  const r = await fetch(API_BASE + path, { headers: { "Content-Type": "application/json" }, ...opts });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+};
+
+const ROUTES = { "#/": "Tomorrow", "#/try": "Try your school", "#/replay": "Replay" };
+function nav(active) {
+  $("#nav").innerHTML = Object.entries(ROUTES).map(([h, l]) => `<a href="${h}" class="${h === active ? "active" : ""}">${l}</a>`).join("");
+}
+
+function callCard(c, extra = "") {
+  const moved = c.move_to ? ` to ${esc(c.move_to)}` : "";
+  return `<div class="card ${bandClass(c.band)}">
+    <h3>${esc(c.label)} <span class="muted">${esc(c.start)}</span></h3>
+    <div class="num">${Math.round(c.forecast_pm25)}</div>
+    <div class="band">PM2.5 ug/m3, ${esc(c.band)}</div>
+    <div class="call ${esc(c.call)}">${esc(c.call)}${moved}</div>
+    <p class="reason">${esc(c.reason)}</p>${extra}</div>`;
+}
+
+function honesty(school, forecastIssued) {
+  const st = school?.station;
+  return `<div class="panel"><h2>Where this comes from</h2><div class="honest">
+    Forecast: CAMS model via Open-Meteo, about 45 km grid, updated every 12 hours${forecastIssued ? `, this one issued ${esc(forecastIssued)}` : ""}.<br>
+    Nearest official station: ${st ? `${esc(st.name)}, ${esc(st.distance_km)} km away, last reported ${esc(st.last_seen)}` : "not yet linked"}.<br>
+    Bands: India NAQI PM2.5 breakpoints (a 24-hour standard) applied to hourly values. That is a simplification.<br>
+    The call is a fixed set of rules you can read in <code>rules.py</code>. The model only writes the message. Not medical advice.</div></div>`;
+}
+
+async function viewTomorrow() {
+  nav("#/");
+  const [school, data, ledger] = await Promise.all([api("/school"), api("/calls"), api("/ledger")]);
+  const calls = data.calls || [];
+  const msg = calls[0]?.message || "No call yet. The 6 PM job has not run for this date.";
+  $("#app").innerHTML = `
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">${esc(school.name || "School")}, ${esc(data.date)}</h2><span class="tag">LIVE</span></div>
+    <div class="grid" style="margin-top:12px">${calls.map((c) => callCard(c, `<div class="status">Teacher: ${esc(c.status || "SENT")}${c.cant_reason ? `, ${esc(c.cant_reason)}` : ""}</div>`)).join("") || "<p class='muted'>No outdoor slots for this date.</p>"}</div>
+    <div class="row" style="margin-top:16px">
+      <div class="phone">${esc(msg)}</div>
+      <div style="flex:1; min-width:280px">
+        <div class="panel" style="margin-top:0"><h2>Ledger</h2>${ledgerTable(ledger.ledger || [])}</div>
+      </div>
+    </div>
+    ${honesty(school, data.forecast ? "today" : null)}`;
+}
+
+function ledgerTable(rows) {
+  if (!rows.length) return "<p class='muted'>No verified days yet. The 3 PM job writes one row per slot.</p>";
+  return `<table><tr><th>Date</th><th>Slot</th><th>Call</th><th>Forecast</th><th>Measured</th><th>Right?</th><th>Children-hours</th></tr>
+    ${rows.map((r) => `<tr><td>${esc(r.date)}</td><td>${esc(r.label)}</td><td>${esc(r.call)}${r.move_to ? " to " + esc(r.move_to) : ""}</td>
+    <td>${Math.round(r.forecast_pm25)}</td><td>${r.measured_pm25 == null ? "no station data" : Math.round(r.measured_pm25)}</td>
+    <td>${r.call_was_right == null ? "unverified" : r.call_was_right ? "right" : "wrong"}</td><td>${esc(r.children_hours_moved)}</td></tr>`).join("")}</table>`;
+}
+
+async function viewTeacher(token) {
+  nav("");
+  let data;
+  try { data = await api("/teacher?token=" + encodeURIComponent(token)); }
+  catch (e) { $("#app").innerHTML = "<p>This link is not valid.</p>"; return; }
+  const render = (calls) => {
+    $("#app").innerHTML = `<h2>Your calls for ${esc(data.date)}</h2>
+      <div class="grid">${calls.map((c) => callCard(c, teacherButtons(c, data.reasons))).join("")}</div>
+      <p class="honest" style="margin-top:12px">Tap OK if you can do it, or Can't and pick why. Ghanti re-plans only the slots affected.</p>`;
+    document.querySelectorAll("[data-ok]").forEach((b) => b.onclick = () => reply(b.dataset.ok, "ok"));
+    document.querySelectorAll("[data-cant]").forEach((b) => b.onclick = () => {
+      const slot = b.dataset.cant;
+      const reason = document.querySelector(`select[data-reason="${slot}"]`).value;
+      const note = document.querySelector(`input[data-note="${slot}"]`).value;
+      reply(slot, "cant", reason, note);
+    });
+  };
+  const reply = async (slot_id, action, reason = "", note = "") => {
+    const out = await api("/reply", { method: "POST", body: JSON.stringify({ token, slot_id, action, reason, note }) });
+    render(out.calls);
+  };
+  render(data.calls);
+}
+
+function teacherButtons(c, reasons) {
+  if (c.status === "OK") return `<div class="status">You confirmed this.</div>`;
+  if (c.status === "CANT") return `<div class="status">You said: ${esc(reasons[c.cant_reason] || c.cant_reason)}</div>`;
+  const opts = Object.entries(reasons).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("");
+  return `<div style="margin-top:10px; display:grid; gap:6px">
+    <button class="primary" data-ok="${esc(c.slot_id)}">OK, will do</button>
+    <select data-reason="${esc(c.slot_id)}">${opts}</select>
+    <input data-note="${esc(c.slot_id)}" placeholder="Optional note for the coordinator">
+    <button class="danger" data-cant="${esc(c.slot_id)}">Can't</button></div>`;
+}
+
+const DEFAULT_SLOTS = [
+  { slot_id: "assembly", label: "Morning assembly", start: "07:50", minutes: 20, headcount: 400, intensity: "light", max_age: 16 },
+  { slot_id: "pe1", label: "PE, junior class", start: "08:30", minutes: 40, headcount: 38, intensity: "moderate", max_age: 7 },
+  { slot_id: "pe2", label: "PE, senior class", start: "10:10", minutes: 40, headcount: 42, intensity: "vigorous", max_age: 12 },
+  { slot_id: "practice", label: "Evening practice", start: "15:30", minutes: 60, headcount: 30, intensity: "vigorous", max_age: 16 },
+];
+
+async function viewTry() {
+  nav("#/try");
+  $("#app").innerHTML = `<h2>Try your school</h2>
+    <div class="panel" style="margin-top:8px">
+      <div class="row">
+        <div style="flex:1;min-width:160px"><label>School name</label><input id="t-name" value="My school"></div>
+        <div style="width:140px"><label>Latitude</label><input id="t-lat" value="28.61"></div>
+        <div style="width:140px"><label>Longitude</label><input id="t-lon" value="77.21"></div>
+        <div style="align-self:flex-end"><button id="t-geo">Use my location</button></div>
+      </div>
+      <table style="margin-top:12px"><tr><th>Slot</th><th>Start</th><th>Minutes</th><th>Children</th><th>Intensity</th><th>Youngest age</th></tr>
+        ${DEFAULT_SLOTS.map((s, i) => `<tr>
+          <td><input data-f="label" data-i="${i}" value="${esc(s.label)}"></td>
+          <td><input data-f="start" data-i="${i}" value="${s.start}"></td>
+          <td><input data-f="minutes" data-i="${i}" value="${s.minutes}"></td>
+          <td><input data-f="headcount" data-i="${i}" value="${s.headcount}"></td>
+          <td><select data-f="intensity" data-i="${i}">${["light","moderate","vigorous"].map((x) => `<option ${x === s.intensity ? "selected" : ""}>${x}</option>`).join("")}</select></td>
+          <td><input data-f="max_age" data-i="${i}" value="${s.max_age}"></td></tr>`).join("")}
+      </table>
+      <div class="row" style="margin-top:12px"><div style="flex:1"><label>Windows when the ground is free for a moved slot (HH:MM, comma-separated)</label><input id="t-win" value="11:10, 12:30, 13:20"></div>
+        <div style="align-self:flex-end"><button class="primary" id="t-go">Tomorrow's call</button></div></div>
+    </div>
+    <div id="t-out"></div>`;
+  $("#t-geo").onclick = () => navigator.geolocation?.getCurrentPosition((p) => { $("#t-lat").value = p.coords.latitude.toFixed(4); $("#t-lon").value = p.coords.longitude.toFixed(4); });
+  $("#t-go").onclick = async () => {
+    const slots = DEFAULT_SLOTS.map((s, i) => {
+      const get = (f) => document.querySelector(`[data-f="${f}"][data-i="${i}"]`).value;
+      return { slot_id: s.slot_id, label: get("label"), start: get("start"), minutes: +get("minutes"), headcount: +get("headcount"),
+               intensity: get("intensity"), max_age: +get("max_age"), weekdays: ["mon","tue","wed","thu","fri","sat","sun"] };
+    });
+    $("#t-out").innerHTML = "<p class='muted'>Fetching tomorrow's forecast...</p>";
+    try {
+      const out = await api("/sandbox", { method: "POST", body: JSON.stringify({
+        name: $("#t-name").value, lat: $("#t-lat").value, lon: $("#t-lon").value, slots,
+        move_windows: $("#t-win").value.split(",").map((x) => x.trim()).filter(Boolean) }) });
+      $("#t-out").innerHTML = `<h3 style="margin:16px 0 8px">${esc(out.date)} (${esc(out.weekday)})</h3>
+        <div class="grid">${out.calls.map((c) => callCard(c)).join("")}</div>
+        <div class="row" style="margin-top:16px"><div class="phone">${esc(out.message)}</div>
+        <div class="panel honest" style="flex:1;margin-top:0">${esc(out.source)}<br>Hourly forecast: ${Object.entries(out.hourly).filter(([h]) => h >= 6 && h <= 18).map(([h, v]) => `${h}h ${Math.round(v)}`).join(" | ")}</div></div>`;
+    } catch (e) { $("#t-out").innerHTML = `<p>Could not compute: ${esc(e.message)}</p>`; }
+  };
+}
+
+async function viewReplay() {
+  nav("#/replay");
+  const data = await api("/replay");
+  const rows = data.rows || [];
+  const byDate = {};
+  rows.forEach((r) => (byDate[r.date] ||= []).push(r));
+  const hours = rows.reduce((a, r) => a + (+r.children_hours_moved || 0), 0);
+  $("#app").innerHTML = `<div class="row" style="justify-content:space-between"><h2 style="margin:0">A real November week</h2><span class="tag">${esc(data.label)}</span></div>
+    <p class="honest">Same school, same rules, run over 10-14 Nov 2025 using modelled air for these coordinates. ${rows.length ? `${Math.round(hours)} children-hours would have moved out of Poor-or-worse air.` : "Run make replay to fill this."}</p>
+    ${Object.keys(byDate).sort().map((d) => `<h3>${d}</h3><div class="grid">${byDate[d].sort((a, b) => a.start.localeCompare(b.start)).map((r) => callCard(r)).join("")}</div>`).join("")}`;
+}
+
+async function route() {
+  const h = location.hash || "#/";
+  try {
+    if (h.startsWith("#/t/")) return await viewTeacher(h.slice(4));
+    if (h === "#/try") return await viewTry();
+    if (h === "#/replay") return await viewReplay();
+    return await viewTomorrow();
+  } catch (e) {
+    $("#app").innerHTML = `<p>Could not load: ${esc(e.message)}. Is API_BASE set in index.html?</p>`;
+  }
+}
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
