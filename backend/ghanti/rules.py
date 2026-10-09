@@ -146,8 +146,8 @@ def decide(slots, hourly, move_windows, weekday, excluded_windows=None):
 
     Algorithm:
         1. Keep only slots scheduled on this weekday and compute each slot's value.
-        2. If every slot is at or above POOR, send everything indoors and say
-           that moving would not help.
+        2. If every slot is at or above POOR and no move window is under
+           POOR, send everything indoors and say that moving would not help.
         3. If the worst slot is in the caution band (61-90), nothing is at or
            above POOR, and the spread between best and worst is under
            FLAT_SPREAD, return NO_CHANGE for all. (A uniformly clean day is
@@ -180,7 +180,10 @@ def decide(slots, hourly, move_windows, weekday, excluded_windows=None):
         return []
 
     values = [v for _, v in valued]
-    if min(values) >= POOR:
+    usable_window = any(
+        w not in excluded and hourly.get(_hour_of(w)) is not None and hourly[_hour_of(w)] < POOR
+        for w in move_windows)
+    if min(values) >= POOR and not usable_window:
         return [
             Call(s.slot_id, s.label, s.start, v, band(v), "INDOORS",
                  reason="Every hour of the school day is Poor or worse; moving would not help.",

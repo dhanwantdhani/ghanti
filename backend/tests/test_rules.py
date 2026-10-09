@@ -45,6 +45,15 @@ class RulesTest(unittest.TestCase):
         self.assertTrue(all(c.call == "INDOORS" for c in calls))
         self.assertIn("would not help", calls[0].reason)
 
+    def test_all_slots_poor_but_a_clean_window_exists(self):
+        hourly = {7: 112, 8: 112, 9: 108, 10: 96, 11: 87, 12: 77, 13: 69, 14: 63}
+        morning_only = [SLOTS[0], SLOTS[1]]  # both at or above 91
+        calls = calls_by_id(decide(morning_only, hourly, WINDOWS, "fri"))
+        self.assertEqual(calls["assembly"].call, "MOVE")
+        self.assertEqual(calls["assembly"].move_to, "13:20")
+        self.assertEqual(calls["pe_2b"].call, "MOVE")
+        self.assertEqual(calls["pe_2b"].move_to, "12:30")
+
     def test_dirty_morning_moves_to_clean_window(self):
         hourly = {7: 150, 8: 142, 9: 120, 10: 98, 11: 80, 12: 66, 13: 58, 14: 55}
         calls = calls_by_id(decide(SLOTS, hourly, WINDOWS, "fri"))

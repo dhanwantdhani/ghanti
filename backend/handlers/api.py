@@ -125,19 +125,35 @@ def _reply(body):
 
 
 def _sandbox(body):
-    """Stateless 'try your school': live forecast, rules, template text. No model call, nothing stored.
+    """Stateless 'try your school': forecast or archive air, rules, template text. No model call, nothing stored.
 
     Expected body: {"lat": float, "lon": float, "name": str,
                     "slots": [{slot_id,label,start,minutes,headcount,intensity,weekdays,max_age}],
-                    "move_windows": ["11:10", ...]}
+                    "move_windows": ["11:10", ...],
+                    "date": "YYYY-MM-DD" (optional; a past date replays that day's modelled air),
+                    "excluded_windows": ["13:20", ...] (optional; windows a teacher said Can't to)}
     """
+    import datetime as _dt
     try:
         school = {"name": body.get("name", "Your school"), "lat": float(body["lat"]), "lon": float(body["lon"]),
                   "slots": body.get("slots", []), "move_windows": body.get("move_windows", [])}
     except (KeyError, ValueError):
         return _resp(400, {"error": "lat and lon are required"})
     date, weekday = tomorrow()
-    calls, hourly = plan_for(school, date, weekday)
-    return _resp(200, {"date": date, "weekday": weekday, "calls": calls, "hourly": hourly,
-                       "message": messaging.template_text(school["name"], date, calls),
-                       "source": "CAMS model via Open-Meteo, 45 km grid, 12-hourly. Rules, not AI."})
+    replay = False
+    if body.get("date"):
+        try:
+            d = _dt.date.fromisoformat(body["date"])
+        except ValueError:
+            return _resp(400, {"error": "date must be YYYY-MM-DD"})
+        if d < _dt.date.fromisoformat(today()[0]):
+            date = d.isoformat()
+            weekday = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"][d.weekday()]
+            replay = True
+    excluded = set(body.get("excluded_windows") or [])
+    calls, hourly = plan_for(school, date, weekday, excluded_windows=excluded)
+    label = ("REPLAY: modelled air (CAMS via Open-Meteo) for this past date. Rules, not AI." if replay
+             else "CAMS model via Open-Meteo, 45 km grid, 12-hourly. Rules, not AI.")
+    return _resp(200, {"date": date, "weekday": weekday, "replay": replay, "calls": calls, "hourly": hourly,
+                       "excluded_windows": sorted(excluded),
+                       "message": messaging.template_text(school["name"], date, calls), "source": label})

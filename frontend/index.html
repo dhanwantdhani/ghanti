@@ -177,27 +177,37 @@ async function viewTry() {
           <td><input data-f="max_age" data-i="${i}" value="${s.max_age}"></td></tr>`).join("")}
       </table>
       <div class="row" style="margin-top:12px"><div style="flex:1"><label>Windows when the ground is free for a moved slot (HH:MM, comma-separated)</label><input id="t-win" value="11:10, 12:30, 13:20"></div>
-        <div style="align-self:flex-end"><button class="primary" id="t-go">Tomorrow's call</button></div></div>
+        <div style="width:170px"><label>Day (blank = tomorrow; a past date replays that day's air)</label><input id="t-date" placeholder="2025-11-12"></div>
+        <div style="align-self:flex-end"><button class="primary" id="t-go">Get the call</button></div></div>
+      <p class="honest" style="margin:10px 0 0">Try 2025-11-12 at the Delhi coordinates to see a winter day. On MOVE cards you can tap "Teacher can't", and Ghanti re-plans without that window.</p>
     </div>
     <div id="t-out"></div>`;
+  let excluded = [];
   $("#t-geo").onclick = () => navigator.geolocation?.getCurrentPosition((p) => { $("#t-lat").value = p.coords.latitude.toFixed(4); $("#t-lon").value = p.coords.longitude.toFixed(4); });
-  $("#t-go").onclick = async () => {
+  const run = async () => {
     const slots = DEFAULT_SLOTS.map((s, i) => {
       const get = (f) => document.querySelector(`[data-f="${f}"][data-i="${i}"]`).value;
       return { slot_id: s.slot_id, label: get("label"), start: get("start"), minutes: +get("minutes"), headcount: +get("headcount"),
                intensity: get("intensity"), max_age: +get("max_age"), weekdays: ["mon","tue","wed","thu","fri","sat","sun"] };
     });
-    $("#t-out").innerHTML = "<p class='muted'>Fetching tomorrow's forecast...</p>";
+    $("#t-out").innerHTML = "<p class='muted'>Fetching the air for that day...</p>";
     try {
       const out = await api("/sandbox", { method: "POST", body: JSON.stringify({
         name: $("#t-name").value, lat: $("#t-lat").value, lon: $("#t-lon").value, slots,
-        move_windows: $("#t-win").value.split(",").map((x) => x.trim()).filter(Boolean) }) });
-      $("#t-out").innerHTML = `<h3 style="margin:16px 0 8px">${esc(out.date)} (${esc(out.weekday)})</h3>
-        <div class="grid">${out.calls.map((c) => callCard(c)).join("")}</div>
+        move_windows: $("#t-win").value.split(",").map((x) => x.trim()).filter(Boolean),
+        date: $("#t-date").value.trim() || undefined, excluded_windows: excluded }) });
+      const tag = out.replay ? `<span class="tag">REPLAY</span>` : `<span class="tag">LIVE FORECAST</span>`;
+      const cantBtn = (c) => c.call === "MOVE" ? `<div style="margin-top:8px"><button class="danger" data-cantwin="${esc(c.move_to)}">Teacher can't do ${esc(c.move_to)}</button></div>` : "";
+      $("#t-out").innerHTML = `<div class="row" style="justify-content:space-between;margin-top:16px"><h3 style="margin:0">${esc(out.date)} (${esc(out.weekday)})</h3>${tag}</div>
+        ${excluded.length ? `<p class="honest">Windows ruled out by the teacher: ${excluded.map(esc).join(", ")}. <a href="#" id="t-reset">Reset</a></p>` : ""}
+        <div class="grid" style="margin-top:8px">${out.calls.map((c) => callCard(c, cantBtn(c))).join("")}</div>
         <div class="row" style="margin-top:16px"><div class="phone">${esc(out.message)}</div>
-        <div class="panel honest" style="flex:1;margin-top:0">${esc(out.source)}<br>Hourly forecast: ${Object.entries(out.hourly).filter(([h]) => h >= 6 && h <= 18).map(([h, v]) => `${h}h ${Math.round(v)}`).join(" | ")}</div></div>`;
+        <div class="panel honest" style="flex:1;margin-top:0">${esc(out.source)}<br>Hourly PM2.5: ${Object.entries(out.hourly).filter(([h]) => h >= 6 && h <= 18).map(([h, v]) => `${h}h ${Math.round(v)}`).join(" | ")}</div></div>`;
+      document.querySelectorAll("[data-cantwin]").forEach((b) => b.onclick = () => { excluded.push(b.dataset.cantwin); run(); });
+      const r = $("#t-reset"); if (r) r.onclick = (ev) => { ev.preventDefault(); excluded = []; run(); };
     } catch (e) { $("#t-out").innerHTML = `<p>Could not compute: ${esc(e.message)}</p>`; }
   };
+  $("#t-go").onclick = () => { excluded = []; run(); };
 }
 
 async function viewReplay() {

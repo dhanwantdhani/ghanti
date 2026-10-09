@@ -6,12 +6,19 @@ from handlers.common import tomorrow, live_school_id, new_token, teacher_url, sl
 def plan_for(school, date, weekday, excluded_windows=None, hourly=None):
     """Compute calls for one school and one date without side effects.
 
-    Algorithm: fetch the forecast if not given; pick the hours for the date;
-    run rules.decide with the school's slots and move windows; return the
-    calls as dicts plus the hourly dict used.
+    Algorithm: if no hourly values are given, fetch them: the forecast when
+    the date is today or later, the archive (modelled, past air) when the
+    date is in the past; pick the hours for the date; run rules.decide with
+    the school's slots and move windows; return the calls as dicts plus the
+    hourly dict used.
     """
     if hourly is None:
-        data = forecast.fetch_hourly(school["lat"], school["lon"], forecast_days=2)
+        from datetime import date as ddate
+        from handlers.common import today
+        if date < today()[0]:
+            data = forecast.fetch_archive(school["lat"], school["lon"], date, date)
+        else:
+            data = forecast.fetch_hourly(school["lat"], school["lon"], forecast_days=2)
         hourly = data.get(date, {})
     calls = rules.decide(slots_from_school(school), hourly, school.get("move_windows", []), weekday, excluded_windows)
     return [c.to_dict() for c in calls], hourly
