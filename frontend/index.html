@@ -5,132 +5,270 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ghanti</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#f6f7f9; --card:#fff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --accent:#1d4ed8;
-          --good:#2e7d32; --sat:#7cb342; --mod:#f9a825; --poor:#ef6c00; --vpoor:#c62828; --severe:#6a1b4d; }
+  :root {
+    --bg:#f6f3ec; --card:#ffffff; --ink:#15171a; --ink2:#4b5563; --muted:#8a8f98; --line:#e6e1d6; --accent:#0f5f8f;
+    --good:#a9e2a4; --sat:#6fc26a; --mod:#dcab2c; --poor:#d7651f; --vpoor:#b4252f; --severe:#5a1024;
+    --radius:16px; --shadow:0 1px 2px rgba(20,20,20,.04), 0 8px 24px rgba(20,20,20,.05);
+  }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:Inter, system-ui, sans-serif; background:var(--bg); color:var(--ink); }
-  header { padding:20px 16px 8px; max-width:960px; margin:0 auto; }
-  header h1 { margin:0; font-size:26px; letter-spacing:-0.02em; }
-  header p { margin:6px 0 0; color:var(--muted); }
-  nav { max-width:960px; margin:12px auto 0; padding:0 16px; display:flex; gap:8px; flex-wrap:wrap; }
-  nav a { text-decoration:none; color:var(--ink); background:var(--card); border:1px solid var(--line); padding:8px 12px; border-radius:999px; font-size:14px; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; font-family:Inter, system-ui, sans-serif; background:var(--bg); color:var(--ink); line-height:1.45; -webkit-font-smoothing:antialiased; }
+  a { color:var(--accent); }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 20px; }
+  header.top { padding:22px 0 6px; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .brand svg { width:38px; height:38px; }
+  .brand h1 { font-family:Fraunces, Georgia, serif; font-weight:600; font-size:34px; margin:0; letter-spacing:-0.01em; }
+  .tagline { color:var(--ink2); margin:4px 0 0; max-width:640px; }
+  nav { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 18px; }
+  nav a { text-decoration:none; color:var(--ink); background:transparent; border:1px solid var(--line); padding:8px 14px; border-radius:999px; font-size:14px; font-weight:500; }
   nav a.active { background:var(--ink); color:#fff; border-color:var(--ink); }
-  main { max-width:960px; margin:0 auto; padding:16px; }
-  .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; border-top:6px solid var(--line); }
-  .card h3 { margin:0 0 4px; font-size:16px; }
-  .card .num { font-size:30px; font-weight:700; letter-spacing:-0.02em; }
-  .card .band { color:var(--muted); font-size:13px; }
-  .call { display:inline-block; margin-top:8px; padding:4px 10px; border-radius:8px; font-weight:600; font-size:13px; background:#eef2ff; color:#1e3a8a; }
-  .call.INDOORS { background:#fee2e2; color:#7f1d1d; } .call.MOVE { background:#fef3c7; color:#78350f; }
-  .call.OUTDOORS { background:#dcfce7; color:#14532d; } .call.CAUTION { background:#ffedd5; color:#7c2d12; }
-  .reason { margin:8px 0 0; font-size:13px; color:var(--muted); }
-  .status { font-size:12px; margin-top:8px; color:var(--muted); }
-  .Good{border-top-color:var(--good)} .Satisfactory{border-top-color:var(--sat)} .Moderate{border-top-color:var(--mod)}
-  .Poor{border-top-color:var(--poor)} .Very.Poor,.VeryPoor{border-top-color:var(--vpoor)} .Severe{border-top-color:var(--severe)}
-  .panel { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-top:16px; }
-  .panel h2 { margin:0 0 8px; font-size:16px; }
-  .honest { font-size:13px; color:var(--muted); line-height:1.5; }
-  .phone { width:300px; border:10px solid #111; border-radius:28px; padding:16px 12px; background:#fff; font-size:13px; white-space:pre-wrap; line-height:1.45; }
+  .tag { display:inline-flex; align-items:center; gap:6px; background:var(--ink); color:#fff; font-size:11px; font-weight:600; padding:4px 10px; border-radius:999px; letter-spacing:.06em; text-transform:uppercase; }
+  .tag.live::before { content:""; width:7px; height:7px; border-radius:50%; background:#5ee08a; box-shadow:0 0 0 3px rgba(94,224,138,.25); }
+  .tag.replay { background:#6b5b3e; }
+  .hero { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px 14px; box-shadow:var(--shadow); }
+  .hero .head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:6px; }
+  .hero h2 { margin:0; font-family:Fraunces, Georgia, serif; font-weight:500; font-size:24px; }
+  .hero .sub { color:var(--muted); font-size:13px; }
+  .strip svg { width:100%; height:auto; display:block; }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; font-size:12px; color:var(--ink2); }
+  .legend span::before { content:""; display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; border:1px solid rgba(0,0,0,.08); }
+  .legend .Good::before{background:var(--good)} .legend .Satisfactory::before{background:var(--sat)} .legend .Moderate::before{background:var(--mod)}
+  .legend .Poor::before{background:var(--poor)} .legend .VeryPoor::before{background:var(--vpoor)} .legend .Severe::before{background:var(--severe)}
+  .tiles { display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); margin:14px 0; }
+  .tile { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+  .tile .k { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+  .tile .v { font-family:Fraunces, Georgia, serif; font-size:30px; font-weight:500; margin-top:2px; line-height:1.1; }
+  .tile .s { font-size:12px; color:var(--ink2); margin-top:4px; }
+  h3.section { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:22px 0 10px; }
+  .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); }
+  .card { position:relative; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); overflow:hidden; }
+  .card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--line); }
+  .card.Good::before{background:var(--good)} .card.Satisfactory::before{background:var(--sat)} .card.Moderate::before{background:var(--mod)}
+  .card.Poor::before{background:var(--poor)} .card.VeryPoor::before{background:var(--vpoor)} .card.Severe::before{background:var(--severe)}
+  .card .label { font-weight:600; font-size:15px; }
+  .card .when { color:var(--muted); font-size:13px; }
+  .card .call { margin:10px 0 6px; font-family:Fraunces, Georgia, serif; font-size:26px; font-weight:600; letter-spacing:-0.01em; }
+  .card .call .arrow { font-family:Inter; font-size:15px; font-weight:500; color:var(--ink2); margin-left:8px; }
+  .call.INDOORS{color:#8a1b25} .call.MOVE{color:#8a4b00} .call.OUTDOORS{color:#1f6b2a} .call.CAUTION{color:#8a4b00} .call.NO_CHANGE{color:var(--ink2)}
+  .chip { display:inline-block; font-size:12px; font-weight:600; padding:3px 9px; border-radius:999px; background:#f1eee6; color:var(--ink2); }
+  .chip.ok{background:#e4f5e6;color:#1f6b2a} .chip.bad{background:#fde8e8;color:#8a1b25} .chip.wait{background:#fff4d6;color:#7a5200}
+  .num { font-weight:600; }
+  .reason { margin:8px 0 0; font-size:13px; color:var(--ink2); }
+  .status { margin-top:10px; font-size:12px; color:var(--muted); display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   .row { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
-  table { width:100%; border-collapse:collapse; font-size:13px; } th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); }
-  button { font:inherit; padding:8px 12px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; }
-  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
-  button.danger { background:#fff; color:#991b1b; border-color:#fecaca; }
-  input, select { font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:8px; width:100%; }
-  label { font-size:12px; color:var(--muted); display:block; margin-bottom:2px; }
-  .tag { display:inline-block; background:#111; color:#fff; font-size:11px; padding:2px 8px; border-radius:999px; letter-spacing:0.04em; }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px; }
+  .panel h4 { margin:0 0 8px; font-size:14px; }
+  .sources { display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); font-size:13px; color:var(--ink2); }
+  .sources b { color:var(--ink); display:block; margin-bottom:2px; }
+  .phone { width:320px; max-width:100%; border:12px solid #1b1d22; border-radius:34px; background:#e9ecef; padding:14px 10px; }
+  .phone .app { font-size:11px; color:#6b7280; text-align:center; margin-bottom:8px; }
+  .bubble { background:#fff; border-radius:14px 14px 14px 4px; padding:10px 12px; font-size:13px; white-space:pre-wrap; line-height:1.4; box-shadow:0 1px 1px rgba(0,0,0,.06); }
+  .bubble .btn { display:block; margin-top:10px; text-align:center; background:#2aabee; color:#fff; border-radius:8px; padding:7px; font-weight:600; font-size:12px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; } th, td { text-align:left; padding:8px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; }
+  button { font:inherit; padding:10px 14px; border-radius:10px; border:1px solid var(--line); background:#fff; cursor:pointer; font-weight:500; }
+  button.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+  button.danger { background:#fff; color:#8a1b25; border-color:#f3c4c4; }
+  button:hover { filter:brightness(.97); }
+  input, select { font:inherit; padding:9px 10px; border:1px solid var(--line); border-radius:10px; width:100%; background:#fff; }
+  label { font-size:12px; color:var(--muted); display:block; margin-bottom:4px; }
   .muted { color:var(--muted); }
+  .tip { position:fixed; pointer-events:none; background:#1b1d22; color:#fff; font-size:12px; padding:6px 9px; border-radius:8px; opacity:0; transform:translate(-50%, -120%); transition:opacity .08s; white-space:nowrap; z-index:50; }
+  footer { color:var(--muted); font-size:12px; padding:30px 0 40px; }
+  @media (max-width:640px) { .brand h1{font-size:28px} .hero{padding:14px} .card .call{font-size:22px} }
 </style>
 </head>
 <body>
-<header>
-  <h1>Ghanti</h1>
-  <p>Every evening, one PE teacher gets tomorrow's call: outdoors, indoors, or a later period. Every afternoon, Ghanti checks whether the call was right.</p>
-</header>
-<nav id="nav"></nav>
-<main id="app">Loading...</main>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="brand">
+        <svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 4c-1.7 0-3 1.3-3 3v1.2C11.5 9.5 8 14 8 19.5V27l-3 4h30l-3-4v-7.5c0-5.5-3.5-10-9-11.3V7c0-1.7-1.3-3-3-3z" fill="#15171a"/><path d="M16 33a4 4 0 0 0 8 0" stroke="#15171a" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <h1>Ghanti</h1>
+      </div>
+      <p class="tagline">Every evening, one PE teacher gets tomorrow's call for each outdoor period: outdoors, indoors, or a later hour. Every afternoon, Ghanti checks the monitor and says whether the call was right.</p>
+    </div>
+    <div id="where"></div>
+  </header>
+  <nav id="nav"></nav>
+  <main id="app">Loading...</main>
+  <footer>Forecast: CAMS via Open-Meteo. Same-hour station: World Air Quality Index project. Archive: OpenAQ. Monitors: CPCB and DPCC. Bands: India NAQI PM2.5 breakpoints applied to hourly values. Not medical advice.</footer>
+</div>
+<div class="tip" id="tip"></div>
 
 <script>
-// Paste the ApiUrl output of "sam deploy" here (keep the trailing slash off).
 const API_BASE = "https://oa3u4obp7wawhdcytx6v6cpvb40fqavt.lambda-url.ap-south-1.on.aws";
 
-const $ = (sel) => document.querySelector(sel);
+const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const bandClass = (b) => (b || "").replace(" ", "");
+const cls = (b) => (b || "").replace(/\s+/g, "");
+const BANDS = [[30,"Good"],[60,"Satisfactory"],[90,"Moderate"],[120,"Poor"],[250,"Very Poor"],[Infinity,"Severe"]];
+const COLORS = { Good:"var(--good)", Satisfactory:"var(--sat)", Moderate:"var(--mod)", Poor:"var(--poor)", "Very Poor":"var(--vpoor)", Severe:"var(--severe)" };
+const band = (v) => BANDS.find(([u]) => v <= u)[1];
+const CALLWORD = { OUTDOORS:"Outdoors", CAUTION:"Outdoors, keep it short", MOVE:"Move", INDOORS:"Indoors", NO_CHANGE:"No change" };
 const api = async (path, opts) => {
   const r = await fetch(API_BASE + path, { headers: { "Content-Type": "application/json" }, ...opts });
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 };
+const toHourly = (h) => Object.fromEntries(Object.entries(h || {}).map(([k, v]) => [parseInt(k, 10), +v]));
+const mins = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; };
 
-const ROUTES = { "#/": "Tomorrow", "#/try": "Try your school", "#/replay": "Replay" };
-function nav(active) {
-  $("#nav").innerHTML = Object.entries(ROUTES).map(([h, l]) => `<a href="${h}" class="${h === active ? "active" : ""}">${l}</a>`).join("");
+const ROUTES = { "#/": "Tomorrow", "#/try": "Try your school", "#/replay": "A November week" };
+function nav(active) { $("#nav").innerHTML = Object.entries(ROUTES).map(([h, l]) => `<a href="${h}" class="${h === active ? "active" : ""}">${l}</a>`).join(""); }
+
+// The day strip: hourly air 06:00-18:00 as a band; above it two rows of slots,
+// "as timetabled" and "after the call", with overlapping slots stacked into lanes.
+function lanes(items) {
+  const rows = [];
+  items.slice().sort((a, b) => a.m0 - b.m0).forEach((it) => {
+    let r = rows.findIndex((row) => row.every((o) => it.m0 >= o.ext + 4 || it.ext <= o.m0 - 4));
+    if (r < 0) { rows.push([]); r = rows.length - 1; }
+    rows[r].push(it); it.lane = r;
+  });
+  return rows.length;
+}
+function dayStrip(hourly, calls, minutesBySlot) {
+  const W = 1100, L = 40, R = 24, x0 = 6 * 60, x1 = 18 * 60, laneH = 28, boxH = 24;
+  const X = (m) => L + (m - x0) / (x1 - x0) * (W - L - R);
+  const short = (s) => s.length > 30 ? s.slice(0, 29) + "…" : s;
+  const pxPerMin = (W - L - R) / (x1 - x0);
+  const needPx = (txt) => txt.length * 6.6 + 14;
+  // x-extent in minutes: the box, plus the label when it does not fit inside the box
+  const extent = (m0, d, txt) => (d * pxPerMin >= needPx(txt)) ? m0 + d : m0 + d + Math.ceil((needPx(txt) + 6) / pxPerMin);
+  const before = (calls || []).map((c) => { const d = minutesBySlot[c.slot_id] || 40; const m0 = mins(c.start); return { c, m0, m1: m0 + d, ext: extent(m0, d, short(c.label)) }; });
+  const after = (calls || []).map((c) => { const d = minutesBySlot[c.slot_id] || 40; const t = c.call === "MOVE" && c.move_to ? mins(c.move_to) : mins(c.start);
+    const lbl = c.call === "MOVE" ? c.label + " → " + c.move_to : c.call === "INDOORS" ? c.label + " · indoors" : c.call === "CAUTION" ? c.label + " · short" : c.label;
+    return { c, m0: t, m1: t + d, ext: extent(t, d, short(lbl)) }; });
+  const nA = lanes(before), nB = lanes(after);
+  const yA = 34, yB = yA + nA * laneH + 30, stripY = yB + nB * laneH + 26, stripH = 34, axisY = stripY + stripH + 24, H = axisY + 10;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Hourly PM2.5 across the school day with outdoor slots before and after the call">`;
+  s += `<text x="${L}" y="${yA - 10}" font-size="11" fill="#8a8f98">As timetabled</text>`;
+  s += `<text x="${L}" y="${yB - 10}" font-size="11" fill="#8a8f98">After the call</text>`;
+  s += `<text x="${L}" y="${stripY - 8}" font-size="11" fill="#8a8f98">PM2.5 by hour, ug/m3</text>`;
+  for (let h = 6; h < 18; h++) {
+    const v = hourly[h], x = X(h * 60) + 1, w = X((h + 1) * 60) - X(h * 60) - 2;
+    if (v == null) { s += `<rect x="${x}" y="${stripY}" width="${w}" height="${stripH}" rx="4" fill="#eee9df"/>`; continue; }
+    const b = band(v), dark = b === "Very Poor" || b === "Severe" || b === "Poor";
+    s += `<rect data-tip="${h}:00  ${Math.round(v)} ug/m3  ${b}" x="${x}" y="${stripY}" width="${w}" height="${stripH}" rx="4" fill="${COLORS[b]}" stroke="rgba(0,0,0,.08)"/>`;
+    s += `<text x="${x + w / 2}" y="${stripY + stripH / 2 + 4}" text-anchor="middle" font-size="12" font-weight="600" fill="${dark ? "#fff" : "#15171a"}">${Math.round(v)}</text>`;
+  }
+  for (let h = 6; h <= 18; h += 2) s += `<text x="${X(h * 60)}" y="${axisY}" text-anchor="middle" font-size="11" fill="#8a8f98">${String(h).padStart(2, "0")}:00</text>`;
+  const box = (it, y, fill, stroke, dashed, label, tip, textColor) => {
+    const x = X(it.m0), w = Math.max(X(it.m1) - x, 8), txt = short(label), need = txt.length * 6.6 + 14;
+    const inside = w >= need;
+    return `<rect data-tip="${esc(tip)}" x="${x}" y="${y}" width="${w}" height="${boxH}" rx="6" fill="${fill}" stroke="${stroke}" stroke-width="1.5" ${dashed ? 'stroke-dasharray="4 3"' : ""}/>` +
+           `<text x="${inside ? x + 7 : x + w + 6}" y="${y + 16}" font-size="11.5" font-weight="600" fill="${inside ? textColor : "#15171a"}">${esc(txt)}</text>`;
+  };
+  let arrows = "", boxes = "";
+  before.forEach((it) => {
+    const c = it.c, b = c.band || band(c.forecast_pm25), y = yA + it.lane * laneH;
+    boxes += box(it, y, COLORS[b], "rgba(0,0,0,.12)", false, c.label, `${c.label} ${c.start}: ${Math.round(c.forecast_pm25)} ug/m3, ${b}`, (b === "Poor" || b === "Very Poor" || b === "Severe") ? "#fff" : "#15171a");
+  });
+  after.forEach((it, i) => {
+    const c = it.c, y = yB + it.lane * laneH;
+    if (c.call === "INDOORS") boxes += box(it, y, "#fff", "#b4252f", true, c.label + " · indoors", `${c.label}: indoors`, "#8a1b25");
+    else if (c.call === "MOVE") { const v = c.move_to_pm25 ?? hourly[parseInt(c.move_to)]; const b = v != null ? band(v) : "Good";
+      boxes += box(it, y, COLORS[b], "#15171a", false, c.label + " → " + c.move_to, `${c.label} moved to ${c.move_to}: ${v != null ? Math.round(v) + " ug/m3, " + b : ""}`, (b === "Poor" || b === "Very Poor" || b === "Severe") ? "#fff" : "#15171a"); }
+    else { const b = c.band || band(c.forecast_pm25);
+      boxes += box(it, y, COLORS[b], "rgba(0,0,0,.12)", c.call === "CAUTION", c.label + (c.call === "CAUTION" ? " · short" : ""), `${c.label}: ${CALLWORD[c.call]}`, (b === "Poor" || b === "Very Poor" || b === "Severe") ? "#fff" : "#15171a"); }
+    if (c.call === "MOVE") {
+      const bi = before[i], xa = X(bi.m0) + Math.max(X(bi.m1) - X(bi.m0), 8) / 2, ya = yA + bi.lane * laneH + boxH;
+      const xb = X(it.m0) + Math.max(X(it.m1) - X(it.m0), 8) / 2, yb = y;
+      arrows += `<path d="M${xa} ${ya} C ${xa} ${ya + 18}, ${xb} ${yb - 18}, ${xb} ${yb - 3}" fill="none" stroke="#15171a" stroke-width="1.5" stroke-dasharray="3 3" opacity=".55"/><path d="M${xb} ${yb} l-4 -7 l8 0 z" fill="#15171a"/>`;
+    }
+  });
+  s += arrows + boxes + `</svg>`;
+  return `<div class="strip">${s}</div>
+    <div class="legend">${Object.keys(COLORS).map((b) => `<span class="${cls(b)}">${b}${b === "Good" ? " 0-30" : b === "Satisfactory" ? " 31-60" : b === "Moderate" ? " 61-90" : b === "Poor" ? " 91-120" : b === "Very Poor" ? " 121-250" : " 251+"}</span>`).join("")}<span style="margin-left:auto">Dashed = indoors or shortened</span></div>`;
 }
 
 function callCard(c, extra = "") {
-  const moved = c.move_to ? ` to ${esc(c.move_to)}` : "";
-  return `<div class="card ${bandClass(c.band)}">
-    <h3>${esc(c.label)} <span class="muted">${esc(c.start)}</span></h3>
-    <div class="num">${Math.round(c.forecast_pm25)}</div>
-    <div class="band">PM2.5 ug/m3, ${esc(c.band)}</div>
-    <div class="call ${esc(c.call)}">${esc(c.call)}${moved}</div>
+  const b = c.band || band(c.forecast_pm25);
+  const move = c.call === "MOVE" ? `<span class="arrow">${esc(c.start)} → ${esc(c.move_to)}${c.move_to_pm25 != null ? ` (${Math.round(c.move_to_pm25)})` : ""}</span>` : "";
+  return `<div class="card ${cls(b)}">
+    <div class="label">${esc(c.label)}</div>
+    <div class="when">${esc(c.start)} · forecast <span class="num">${Math.round(c.forecast_pm25)}</span> ug/m3 · ${esc(b)}</div>
+    <div class="call ${esc(c.call)}">${CALLWORD[c.call] || esc(c.call)}${move}</div>
     <p class="reason">${esc(c.reason)}</p>${extra}</div>`;
 }
+const statusChip = (c) => c.status === "OK" ? `<span class="chip ok">Teacher: will do</span>` : c.status === "CANT" ? `<span class="chip bad">Teacher: can't${c.cant_reason ? ", " + esc(reasonText(c.cant_reason)) : ""}</span>` : c.status === "UPDATED" ? `<span class="chip wait">Updated at 6 AM</span>` : `<span class="chip">Sent, awaiting reply</span>`;
+const REASONS = { class_busy: "class has a test or event", teacher_busy: "teaching another class", ground_busy: "ground or hall is taken" };
+const reasonText = (k) => REASONS[k] || k;
 
-function honesty(school, forecastIssued) {
-  const st = school?.station;
-  return `<div class="panel"><h2>Where this comes from</h2><div class="honest">
-    Forecast: CAMS model via Open-Meteo, about 45 km grid, updated every 12 hours${forecastIssued ? `, this one issued ${esc(forecastIssued)}` : ""}.<br>
-    Nearest official station: ${st ? `${esc(st.name)}, ${esc(st.distance_km)} km away, last reported ${esc(st.last_seen)}` : "not yet linked"}.<br>
-    Bands: India NAQI PM2.5 breakpoints (a 24-hour standard) applied to hourly values. That is a simplification.<br>
-    The call is a fixed set of rules you can read in <code>rules.py</code>. The model only writes the message. Not medical advice.</div></div>`;
+function sources(school, issued) {
+  const st = school?.station, w = school?.waqi_station;
+  return `<div class="panel" style="margin-top:18px"><h4>Where this comes from</h4><div class="sources">
+    <div><b>Forecast</b>CAMS global model via Open-Meteo. About 45 km grid, updated every 12 hours${issued ? `; this one ${esc(issued)}` : ""}. A model, not a station.</div>
+    <div><b>Same-hour station</b>${w ? esc(w) : "not linked"}, via the World Air Quality Index project, read every hour. Used for the 6 AM re-check and the 3 PM verification.</div>
+    <div><b>Archive station</b>${st ? `${esc(st.name)}, ${esc(st.distance_km)} km away, last reported ${esc(st.last_seen)}` : "not linked"} via OpenAQ. Arrives 1-2 days late and then replaces same-hour values in the ledger.</div>
+    <div><b>The call</b>A fixed set of rules in <code>rules.py</code> (14 tests). Amazon Nova writes the message and never changes a call. India NAQI bands applied to hourly values, which is a simplification.</div>
+  </div></div>`;
 }
 
 async function viewTomorrow() {
   nav("#/");
   const [school, data, ledger] = await Promise.all([api("/school"), api("/calls"), api("/ledger")]);
-  const calls = data.calls || [];
-  const msg = calls[0]?.message || "No call yet. The 6 PM job has not run for this date.";
+  const calls = data.calls || [], hourly = toHourly(data.forecast), rows = ledger.ledger || [];
+  const minutesBySlot = Object.fromEntries((school.slots || []).map((s) => [s.slot_id, s.minutes]));
+  const moved = calls.filter((c) => c.call === "MOVE" || c.call === "INDOORS");
+  const hoursMoved = moved.reduce((a, c) => a + (+c.children_hours || 0), 0);
+  const verified = rows.filter((r) => r.measured_pm25 != null);
+  const right = verified.filter((r) => r.call_was_right).length;
+  const msg = calls[0]?.message || "No call yet for this date. The 6 PM job writes it.";
+  $("#where").innerHTML = `<div style="text-align:right"><span class="tag live">Live</span><div class="muted" style="font-size:13px;margin-top:6px">${esc(school.name || "")}, ${esc(school.city || "")}</div></div>`;
   $("#app").innerHTML = `
-    <div class="row" style="justify-content:space-between"><h2 style="margin:0">${esc(school.name || "School")}, ${esc(data.date)}</h2><span class="tag">LIVE</span></div>
-    <div class="grid" style="margin-top:12px">${calls.map((c) => callCard(c, `<div class="status">Teacher: ${esc(c.status || "SENT")}${c.cant_reason ? `, ${esc(c.cant_reason)}` : ""}</div>`)).join("") || "<p class='muted'>No outdoor slots for this date.</p>"}</div>
-    <div class="row" style="margin-top:16px">
-      <div class="phone">${esc(msg)}</div>
-      <div style="flex:1; min-width:280px">
-        <div class="panel" style="margin-top:0"><h2>Ledger</h2>${ledgerTable(ledger.ledger || [])}</div>
-      </div>
+    <section class="hero">
+      <div class="head"><h2>${esc(data.date)}: tomorrow's call</h2><span class="sub">${school.illustrative ? "Illustrative timetable at a real location; " : ""}real forecast, real monitors</span></div>
+      ${dayStrip(hourly, calls, minutesBySlot)}
+    </section>
+    <div class="tiles">
+      <div class="tile"><div class="k">Outdoor slots tomorrow</div><div class="v">${calls.length}</div><div class="s">${moved.length} moved or taken indoors</div></div>
+      <div class="tile"><div class="k">Children-hours moved</div><div class="v">${Math.round(hoursMoved)}</div><div class="s">out of Poor-or-worse air</div></div>
+      <div class="tile"><div class="k">Calls verified so far</div><div class="v">${verified.length ? `${right}/${verified.length}` : "0"}</div><div class="s">${verified.length ? "right, against the monitor" : "first check at 3 PM"}</div></div>
+      <div class="tile"><div class="k">Nearest monitor</div><div class="v" style="font-size:20px">${esc((school.waqi_station || "").split(",")[0] || "linking")}</div><div class="s">${school.station ? `${esc(school.station.distance_km)} km archive at ${esc(school.station.name.split(",")[0])}` : ""}</div></div>
     </div>
-    ${honesty(school, data.forecast ? "today" : null)}`;
+    <h3 class="section">Each slot</h3>
+    <div class="grid">${calls.map((c) => callCard(c, `<div class="status">${statusChip(c)}</div>`)).join("") || "<p class='muted'>No outdoor slots for this date.</p>"}</div>
+    <h3 class="section">What the teacher received</h3>
+    <div class="row">
+      <div class="phone"><div class="app">Telegram · Ghanti</div><div class="bubble">${esc(msg)}<span class="btn">Confirm or object</span></div></div>
+      <div class="panel" style="flex:1;min-width:300px"><h4>Ledger</h4>${ledgerTable(rows)}</div>
+    </div>
+    ${sources(school, data.forecast ? "issued for " + esc(data.date) : null)}`;
+  wireTips();
 }
 
 function ledgerTable(rows) {
-  if (!rows.length) return "<p class='muted'>No verified days yet. The 3 PM job writes one row per slot.</p>";
-  return `<table><tr><th>Date</th><th>Slot</th><th>Call</th><th>Forecast</th><th>Measured</th><th>Right?</th><th>Children-hours</th></tr>
-    ${rows.map((r) => `<tr><td>${esc(r.date)}</td><td>${esc(r.label)}</td><td>${esc(r.call)}${r.move_to ? " to " + esc(r.move_to) : ""}</td>
-    <td>${Math.round(r.forecast_pm25)}</td><td>${r.measured_pm25 == null ? "no station data" : Math.round(r.measured_pm25)}</td>
-    <td>${r.call_was_right == null ? "unverified" : r.call_was_right ? "right" : "wrong"}</td><td>${esc(r.children_hours_moved)}</td></tr>`).join("")}</table>`;
+  if (!rows.length) return "<p class='muted' style='margin:0'>Empty until the first 3 PM check. Each row: what the forecast said, what the monitor measured, whether the call was right.</p>";
+  return `<table><tr><th>Date</th><th>Slot</th><th>Call</th><th>Forecast</th><th>Measured</th><th>Verdict</th><th>Children-hours</th></tr>
+    ${rows.map((r) => `<tr><td>${esc(r.date)}</td><td>${esc(r.label)}</td><td>${CALLWORD[r.call] || esc(r.call)}${r.move_to ? " → " + esc(r.move_to) : ""}</td>
+    <td>${Math.round(r.forecast_pm25)}</td><td>${r.measured_pm25 == null ? "<span class='chip wait'>awaiting station</span>" : Math.round(r.measured_pm25)}</td>
+    <td>${r.call_was_right == null ? "<span class='chip'>unverified</span>" : r.call_was_right ? "<span class='chip ok'>right</span>" : "<span class='chip bad'>wrong</span>"}</td><td>${esc(r.children_hours_moved)}</td></tr>`).join("")}</table>`;
 }
 
 async function viewTeacher(token) {
   nav("");
-  let data;
-  try { data = await api("/teacher?token=" + encodeURIComponent(token)); }
+  let data, school;
+  try { [data, school] = await Promise.all([api("/teacher?token=" + encodeURIComponent(token)), api("/school")]); }
   catch (e) { $("#app").innerHTML = "<p>This link is not valid.</p>"; return; }
+  const minutesBySlot = Object.fromEntries((school.slots || []).map((s) => [s.slot_id, s.minutes]));
+  let hourly = {};
+  try { hourly = toHourly((await api("/calls?date=" + data.date)).forecast); } catch (e) {}
+  $("#where").innerHTML = `<span class="tag live">Teacher view</span>`;
   const render = (calls) => {
-    $("#app").innerHTML = `<h2>Your calls for ${esc(data.date)}</h2>
-      <div class="grid">${calls.map((c) => callCard(c, teacherButtons(c, data.reasons))).join("")}</div>
-      <p class="honest" style="margin-top:12px">Tap OK if you can do it, or Can't and pick why. Ghanti re-plans only the slots affected.</p>`;
+    $("#app").innerHTML = `<section class="hero"><div class="head"><h2>Your slots on ${esc(data.date)}</h2><span class="sub">Tap OK if you can do it. Tap Can't and pick why; only your slot re-plans.</span></div>
+      ${dayStrip(hourly, calls, minutesBySlot)}</section>
+      <div class="grid" style="margin-top:14px">${calls.map((c) => callCard(c, teacherButtons(c, data.reasons))).join("")}</div>`;
     document.querySelectorAll("[data-ok]").forEach((b) => b.onclick = () => reply(b.dataset.ok, "ok"));
     document.querySelectorAll("[data-cant]").forEach((b) => b.onclick = () => {
       const slot = b.dataset.cant;
-      const reason = document.querySelector(`select[data-reason="${slot}"]`).value;
-      const note = document.querySelector(`input[data-note="${slot}"]`).value;
-      reply(slot, "cant", reason, note);
+      reply(slot, "cant", document.querySelector(`select[data-reason="${slot}"]`).value, document.querySelector(`input[data-note="${slot}"]`).value);
     });
+    wireTips();
   };
   const reply = async (slot_id, action, reason = "", note = "") => {
     const out = await api("/reply", { method: "POST", body: JSON.stringify({ token, slot_id, action, reason, note }) });
@@ -140,10 +278,10 @@ async function viewTeacher(token) {
 }
 
 function teacherButtons(c, reasons) {
-  if (c.status === "OK") return `<div class="status">You confirmed this.</div>`;
-  if (c.status === "CANT") return `<div class="status">You said: ${esc(reasons[c.cant_reason] || c.cant_reason)}</div>`;
+  if (c.status === "OK") return `<div class="status"><span class="chip ok">You confirmed this</span></div>`;
+  if (c.status === "CANT") return `<div class="status"><span class="chip bad">You said: ${esc(reasons[c.cant_reason] || c.cant_reason)}</span></div>`;
   const opts = Object.entries(reasons).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("");
-  return `<div style="margin-top:10px; display:grid; gap:6px">
+  return `<div style="margin-top:12px; display:grid; gap:8px">
     <button class="primary" data-ok="${esc(c.slot_id)}">OK, will do</button>
     <select data-reason="${esc(c.slot_id)}">${opts}</select>
     <input data-note="${esc(c.slot_id)}" placeholder="Optional note for the coordinator">
@@ -151,23 +289,24 @@ function teacherButtons(c, reasons) {
 }
 
 const DEFAULT_SLOTS = [
-  { slot_id: "assembly", label: "Morning assembly", start: "07:50", minutes: 20, headcount: 400, intensity: "light", max_age: 16 },
+  { slot_id: "assembly", label: "Morning assembly", start: "07:50", minutes: 20, headcount: 400, intensity: "light", max_age: 14 },
   { slot_id: "pe1", label: "PE, junior class", start: "08:30", minutes: 40, headcount: 38, intensity: "moderate", max_age: 7 },
-  { slot_id: "pe2", label: "PE, senior class", start: "10:10", minutes: 40, headcount: 42, intensity: "vigorous", max_age: 12 },
+  { slot_id: "recess", label: "Recess, outdoor play", start: "10:50", minutes: 20, headcount: 400, intensity: "light", max_age: 14 },
+  { slot_id: "pe2", label: "PE, senior class", start: "11:10", minutes: 40, headcount: 42, intensity: "vigorous", max_age: 12 },
   { slot_id: "practice", label: "Evening practice", start: "15:30", minutes: 60, headcount: 30, intensity: "vigorous", max_age: 16 },
 ];
 
 async function viewTry() {
   nav("#/try");
-  $("#app").innerHTML = `<h2>Try your school</h2>
-    <div class="panel" style="margin-top:8px">
-      <div class="row">
-        <div style="flex:1;min-width:160px"><label>School name</label><input id="t-name" value="My school"></div>
-        <div style="width:140px"><label>Latitude</label><input id="t-lat" value="28.61"></div>
-        <div style="width:140px"><label>Longitude</label><input id="t-lon" value="77.21"></div>
+  $("#where").innerHTML = `<span class="tag">Sandbox</span>`;
+  $("#app").innerHTML = `<section class="hero"><div class="head"><h2>Try your school</h2><span class="sub">Any coordinates, tomorrow's forecast or any past day's air. Nothing is stored.</span></div>
+      <div class="row" style="margin-top:6px">
+        <div style="flex:2;min-width:200px"><label>School name</label><input id="t-name" value="My school"></div>
+        <div style="flex:1;min-width:120px"><label>Latitude</label><input id="t-lat" value="28.7234"></div>
+        <div style="flex:1;min-width:120px"><label>Longitude</label><input id="t-lon" value="77.1123"></div>
         <div style="align-self:flex-end"><button id="t-geo">Use my location</button></div>
       </div>
-      <table style="margin-top:12px"><tr><th>Slot</th><th>Start</th><th>Minutes</th><th>Children</th><th>Intensity</th><th>Youngest age</th></tr>
+      <table style="margin-top:14px"><tr><th>Slot</th><th>Start</th><th>Minutes</th><th>Children</th><th>Intensity</th><th>Youngest</th></tr>
         ${DEFAULT_SLOTS.map((s, i) => `<tr>
           <td><input data-f="label" data-i="${i}" value="${esc(s.label)}"></td>
           <td><input data-f="start" data-i="${i}" value="${s.start}"></td>
@@ -176,50 +315,72 @@ async function viewTry() {
           <td><select data-f="intensity" data-i="${i}">${["light","moderate","vigorous"].map((x) => `<option ${x === s.intensity ? "selected" : ""}>${x}</option>`).join("")}</select></td>
           <td><input data-f="max_age" data-i="${i}" value="${s.max_age}"></td></tr>`).join("")}
       </table>
-      <div class="row" style="margin-top:12px"><div style="flex:1"><label>Windows when the ground is free for a moved slot (HH:MM, comma-separated)</label><input id="t-win" value="11:10, 12:30, 13:20"></div>
-        <div style="width:170px"><label>Day (blank = tomorrow; a past date replays that day's air)</label><input id="t-date" placeholder="2025-11-12"></div>
-        <div style="align-self:flex-end"><button class="primary" id="t-go">Get the call</button></div></div>
-      <p class="honest" style="margin:10px 0 0">Try 2025-11-12 at the Delhi coordinates to see a winter day. On MOVE cards you can tap "Teacher can't", and Ghanti re-plans without that window.</p>
-    </div>
+      <div class="row" style="margin-top:14px;align-items:flex-end">
+        <div style="flex:2;min-width:220px"><label>Hours the ground is free for a moved slot (HH:MM, comma-separated)</label><input id="t-win" value="11:50, 12:30, 13:20"></div>
+        <div style="flex:1;min-width:160px"><label>Day (blank = tomorrow; a past date replays that day)</label><input id="t-date" placeholder="2025-11-12"></div>
+        <div><button class="primary" id="t-go">Get the call</button></div>
+      </div>
+      <p class="muted" style="font-size:13px;margin:10px 0 0">Try <b>2025-11-12</b> at the Delhi coordinates for a winter day. On a Move card, tap "Teacher can't" and watch it re-plan.</p>
+    </section>
     <div id="t-out"></div>`;
-  let excluded = [];
   $("#t-geo").onclick = () => navigator.geolocation?.getCurrentPosition((p) => { $("#t-lat").value = p.coords.latitude.toFixed(4); $("#t-lon").value = p.coords.longitude.toFixed(4); });
+  let excluded = [];
   const run = async () => {
     const slots = DEFAULT_SLOTS.map((s, i) => {
       const get = (f) => document.querySelector(`[data-f="${f}"][data-i="${i}"]`).value;
       return { slot_id: s.slot_id, label: get("label"), start: get("start"), minutes: +get("minutes"), headcount: +get("headcount"),
                intensity: get("intensity"), max_age: +get("max_age"), weekdays: ["mon","tue","wed","thu","fri","sat","sun"] };
     });
-    $("#t-out").innerHTML = "<p class='muted'>Fetching the air for that day...</p>";
+    const minutesBySlot = Object.fromEntries(slots.map((s) => [s.slot_id, s.minutes]));
+    $("#t-out").innerHTML = "<p class='muted' style='margin:14px 0'>Fetching the air for that day...</p>";
     try {
       const out = await api("/sandbox", { method: "POST", body: JSON.stringify({
         name: $("#t-name").value, lat: $("#t-lat").value, lon: $("#t-lon").value, slots,
         move_windows: $("#t-win").value.split(",").map((x) => x.trim()).filter(Boolean),
         date: $("#t-date").value.trim() || undefined, excluded_windows: excluded }) });
-      const tag = out.replay ? `<span class="tag">REPLAY</span>` : `<span class="tag">LIVE FORECAST</span>`;
-      const cantBtn = (c) => c.call === "MOVE" ? `<div style="margin-top:8px"><button class="danger" data-cantwin="${esc(c.move_to)}">Teacher can't do ${esc(c.move_to)}</button></div>` : "";
-      $("#t-out").innerHTML = `<div class="row" style="justify-content:space-between;margin-top:16px"><h3 style="margin:0">${esc(out.date)} (${esc(out.weekday)})</h3>${tag}</div>
-        ${excluded.length ? `<p class="honest">Windows ruled out by the teacher: ${excluded.map(esc).join(", ")}. <a href="#" id="t-reset">Reset</a></p>` : ""}
-        <div class="grid" style="margin-top:8px">${out.calls.map((c) => callCard(c, cantBtn(c))).join("")}</div>
-        <div class="row" style="margin-top:16px"><div class="phone">${esc(out.message)}</div>
-        <div class="panel honest" style="flex:1;margin-top:0">${esc(out.source)}<br>Hourly PM2.5: ${Object.entries(out.hourly).filter(([h]) => h >= 6 && h <= 18).map(([h, v]) => `${h}h ${Math.round(v)}`).join(" | ")}</div></div>`;
+      const hourly = toHourly(out.hourly);
+      const cantBtn = (c) => c.call === "MOVE" ? `<div class="status"><button class="danger" data-cantwin="${esc(c.move_to)}">Teacher can't do ${esc(c.move_to)}</button></div>` : "";
+      $("#t-out").innerHTML = `<section class="hero" style="margin-top:14px"><div class="head"><h2>${esc(out.date)} (${esc(out.weekday)})</h2><span class="tag ${out.replay ? "replay" : "live"}">${out.replay ? "Replay, modelled air" : "Live forecast"}</span></div>
+        ${dayStrip(hourly, out.calls, minutesBySlot)}
+        ${excluded.length ? `<p class="muted" style="font-size:13px">Windows the teacher ruled out: ${excluded.map(esc).join(", ")}. <a href="#" id="t-reset">Reset</a></p>` : ""}</section>
+        <div class="grid" style="margin-top:14px">${out.calls.map((c) => callCard(c, cantBtn(c))).join("")}</div>
+        <div class="row" style="margin-top:16px"><div class="phone"><div class="app">Telegram · Ghanti</div><div class="bubble">${esc(out.message)}<span class="btn">Confirm or object</span></div></div>
+        <div class="panel" style="flex:1;min-width:280px"><h4>Source</h4><p class="muted" style="font-size:13px;margin:0">${esc(out.source)}</p></div></div>`;
       document.querySelectorAll("[data-cantwin]").forEach((b) => b.onclick = () => { excluded.push(b.dataset.cantwin); run(); });
       const r = $("#t-reset"); if (r) r.onclick = (ev) => { ev.preventDefault(); excluded = []; run(); };
+      wireTips();
     } catch (e) { $("#t-out").innerHTML = `<p>Could not compute: ${esc(e.message)}</p>`; }
   };
   $("#t-go").onclick = () => { excluded = []; run(); };
 }
 
+const REPLAY_DAYS = ["2025-11-10", "2025-11-11", "2025-11-12", "2025-11-13", "2025-11-14"];
+
 async function viewReplay() {
   nav("#/replay");
-  const data = await api("/replay");
-  const rows = data.rows || [];
-  const byDate = {};
-  rows.forEach((r) => (byDate[r.date] ||= []).push(r));
-  const hours = rows.reduce((a, r) => a + (+r.children_hours_moved || 0), 0);
-  $("#app").innerHTML = `<div class="row" style="justify-content:space-between"><h2 style="margin:0">A real November week</h2><span class="tag">${esc(data.label)}</span></div>
-    <p class="honest">Same school, same rules, run over 10-14 Nov 2025 using modelled air for these coordinates. ${rows.length ? `${Math.round(hours)} children-hours would have moved out of Poor-or-worse air.` : "Run make replay to fill this."}</p>
-    ${Object.keys(byDate).sort().map((d) => `<h3>${d}</h3><div class="grid">${byDate[d].sort((a, b) => a.start.localeCompare(b.start)).map((r) => callCard(r)).join("")}</div>`).join("")}`;
+  $("#where").innerHTML = `<span class="tag replay">Replay, modelled air</span>`;
+  $("#app").innerHTML = "<p class='muted'>Running the same rules over a real November week...</p>";
+  const school = await api("/school");
+  const slots = (school.slots || []).map((s) => ({ ...s }));
+  const minutesBySlot = Object.fromEntries(slots.map((s) => [s.slot_id, s.minutes]));
+  const days = await Promise.all(REPLAY_DAYS.map((date) => api("/sandbox", { method: "POST", body: JSON.stringify({
+    name: school.name, lat: school.lat, lon: school.lon, slots, move_windows: school.move_windows || [], date }) })));
+  const all = days.flatMap((d) => d.calls);
+  const moves = all.filter((c) => c.call === "MOVE").length, indoors = all.filter((c) => c.call === "INDOORS").length;
+  const hours = all.reduce((a, c) => a + (+c.children_hours || 0), 0);
+  $("#app").innerHTML = `<section class="hero"><div class="head"><h2>Same school, a real November week</h2><span class="sub">10-14 Nov 2025, modelled air (CAMS) for these coordinates, same rules, computed live</span></div>
+      <div class="tiles" style="margin:6px 0 0"><div class="tile"><div class="k">Slots moved</div><div class="v">${moves}</div></div><div class="tile"><div class="k">Taken indoors</div><div class="v">${indoors}</div></div><div class="tile"><div class="k">Children-hours out of bad air</div><div class="v">${Math.round(hours)}</div><div class="s">if every call had been followed</div></div></div></section>
+    ${days.map((d) => `<section class="hero" style="margin-top:14px"><div class="head"><h2>${esc(d.date)} (${esc(d.weekday)})</h2><span class="tag replay">Replay</span></div>${dayStrip(toHourly(d.hourly), d.calls, minutesBySlot)}</section>
+      <div class="grid" style="margin-top:12px">${d.calls.map((c) => callCard(c)).join("")}</div>`).join("")}`;
+  wireTips();
+}
+
+function wireTips() {
+  const tip = $("#tip");
+  document.querySelectorAll("[data-tip]").forEach((el) => {
+    el.addEventListener("mousemove", (e) => { tip.textContent = el.dataset.tip; tip.style.left = e.clientX + "px"; tip.style.top = e.clientY + "px"; tip.style.opacity = 1; });
+    el.addEventListener("mouseleave", () => tip.style.opacity = 0);
+  });
 }
 
 async function route() {
@@ -230,7 +391,7 @@ async function route() {
     if (h === "#/replay") return await viewReplay();
     return await viewTomorrow();
   } catch (e) {
-    $("#app").innerHTML = `<p>Could not load: ${esc(e.message)}. Is API_BASE set in index.html?</p>`;
+    $("#app").innerHTML = `<p>Could not load: ${esc(e.message)}. Hard-refresh the page; if it persists, the API is down.</p>`;
   }
 }
 window.addEventListener("hashchange", route);
