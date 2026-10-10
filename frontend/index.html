@@ -4,60 +4,108 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ghanti</title>
+<meta name="description" content="Should the children go outside tomorrow? Ghanti decides, period by period, from tomorrow's air forecast, and checks itself against the nearest monitor the next afternoon.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:#f6f3ec; --card:#ffffff; --ink:#15171a; --ink2:#4b5563; --muted:#8a8f98; --line:#e6e1d6; --accent:#0f5f8f;
     --good:#a9e2a4; --sat:#6fc26a; --mod:#dcab2c; --poor:#d7651f; --vpoor:#b4252f; --severe:#5a1024;
+    --go:#1f6b2a; --care:#8a4b00; --stop:#8a1b25;
     --radius:16px; --shadow:0 1px 2px rgba(20,20,20,.04), 0 8px 24px rgba(20,20,20,.05);
   }
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
   body { margin:0; font-family:Inter, system-ui, sans-serif; background:var(--bg); color:var(--ink); line-height:1.45; -webkit-font-smoothing:antialiased; }
   a { color:var(--accent); }
-  .wrap { max-width:1080px; margin:0 auto; padding:0 20px; }
-  header.top { padding:22px 0 6px; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 20px; }
+
+  /* header */
+  header.top { padding:24px 0 4px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
   .brand { display:flex; align-items:center; gap:12px; }
   .brand svg { width:38px; height:38px; }
   .brand h1 { font-family:Fraunces, Georgia, serif; font-weight:600; font-size:34px; margin:0; letter-spacing:-0.01em; }
-  .tagline { color:var(--ink2); margin:4px 0 0; max-width:640px; }
-  nav { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 18px; }
-  nav a { text-decoration:none; color:var(--ink); background:transparent; border:1px solid var(--line); padding:8px 14px; border-radius:999px; font-size:14px; font-weight:500; }
+  .tagline { font-family:Fraunces, Georgia, serif; font-size:21px; font-weight:500; color:var(--ink); margin:12px 0 4px; max-width:620px; line-height:1.3; }
+  .tagline2 { color:var(--ink2); margin:0; max-width:620px; font-size:15px; }
+  nav { display:flex; gap:8px; flex-wrap:wrap; margin:18px 0 18px; }
+  nav a { text-decoration:none; color:var(--ink); background:#fff; border:1px solid var(--line); padding:9px 16px; border-radius:999px; font-size:14px; font-weight:500; }
   nav a.active { background:var(--ink); color:#fff; border-color:var(--ink); }
   .tag { display:inline-flex; align-items:center; gap:6px; background:var(--ink); color:#fff; font-size:11px; font-weight:600; padding:4px 10px; border-radius:999px; letter-spacing:.06em; text-transform:uppercase; }
   .tag.live::before { content:""; width:7px; height:7px; border-radius:50%; background:#5ee08a; box-shadow:0 0 0 3px rgba(94,224,138,.25); }
   .tag.replay { background:#6b5b3e; }
-  .hero { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px 14px; box-shadow:var(--shadow); }
-  .hero .head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:6px; }
-  .hero h2 { margin:0; font-family:Fraunces, Georgia, serif; font-weight:500; font-size:24px; }
+
+  /* how it works */
+  .steps { display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); }
+  .step { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+  .step .n { width:26px; height:26px; border-radius:50%; background:var(--ink); color:#fff; font-size:13px; font-weight:600; display:inline-flex; align-items:center; justify-content:center; margin-bottom:8px; }
+  .step b { display:block; margin-bottom:3px; font-size:15px; }
+  .step p { margin:0; font-size:13px; color:var(--ink2); }
+  .intro-foot { font-size:13px; color:var(--ink2); margin:12px 0 0; display:flex; gap:6px 10px; flex-wrap:wrap; align-items:center; }
+  .aws { display:inline-block; font-size:11px; font-weight:600; padding:3px 8px; border-radius:6px; background:#fff3e0; color:#8a4b00; border:1px solid #f3dcb8; }
+
+  /* cards */
+  .hero { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px 16px; box-shadow:var(--shadow); }
+  .hero .head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:4px; }
+  .hero h2 { margin:0; font-family:Fraunces, Georgia, serif; font-weight:500; font-size:26px; }
   .hero .sub { color:var(--muted); font-size:13px; }
+  .summary { font-size:16px; margin:6px 0 10px; color:var(--ink); }
+  .key { font-size:12px; color:var(--muted); margin-top:8px; }
+  h3.section { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:24px 0 10px; }
+
+  /* hour band */
+  .hours { display:grid; grid-template-columns:repeat(12, 1fr); gap:3px; margin-top:6px; }
+  .hours div { height:44px; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:13px; font-weight:600; line-height:1.1; }
+  .hours small { font-weight:500; font-size:10px; opacity:.8; }
+  .hours small.n { display:none; }
+  @media (max-width:560px) { .hours small.w { display:none; } .hours small.n { display:inline; } }
+
+  /* period rows */
+  .periods { display:flex; flex-direction:column; gap:10px; }
+  .period { display:grid; grid-template-columns:70px 1fr auto; gap:14px; align-items:center; background:var(--card); border:1px solid var(--line); border-left:6px solid var(--line); border-radius:14px; padding:14px 16px; box-shadow:var(--shadow); }
+  .period.Good{border-left-color:var(--good)} .period.Satisfactory{border-left-color:var(--sat)} .period.Moderate{border-left-color:var(--mod)}
+  .period.Poor{border-left-color:var(--poor)} .period.VeryPoor{border-left-color:var(--vpoor)} .period.Severe{border-left-color:var(--severe)}
+  .period .time { font-family:Fraunces, Georgia, serif; font-size:22px; font-weight:500; }
+  .period .name { font-weight:600; font-size:15px; }
+  .period .meta { font-size:12px; color:var(--muted); }
+  .period .why { font-size:13px; color:var(--ink2); margin-top:4px; }
+  .verdict { text-align:right; min-width:150px; }
+  .verdict .word { font-family:Fraunces, Georgia, serif; font-size:21px; font-weight:600; display:inline-flex; align-items:center; gap:8px; letter-spacing:-0.01em; }
+  .verdict .word svg { width:20px; height:20px; flex:none; }
+  .verdict .air { font-size:12px; color:var(--ink2); margin-top:4px; display:flex; justify-content:flex-end; align-items:center; gap:6px; }
+  .verdict.OUTDOORS .word{color:var(--go)} .verdict.CAUTION .word{color:var(--care)} .verdict.MOVE .word{color:var(--care)} .verdict.INDOORS .word{color:var(--stop)} .verdict.NO_CHANGE .word{color:var(--ink2)}
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,.12); flex:none; }
+  @media (max-width:640px) {
+    .period { grid-template-columns:1fr; gap:6px; }
+    .period .time { font-size:18px; order:0; }
+    .period .verdict { order:1; } .period .mid { order:2; }
+    .verdict { text-align:left; } .verdict .air { justify-content:flex-start; }
+  }
+  .bubble { overflow-wrap:anywhere; }
+
+  /* expandable sections */
+  details { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:0 18px; margin-top:12px; }
+  summary { cursor:pointer; padding:14px 0; font-weight:600; font-size:14px; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  summary::-webkit-details-marker { display:none; }
+  summary::after { content:"+"; color:var(--muted); font-size:18px; font-weight:500; }
+  details[open] summary::after { content:"\2013"; }
+  summary small { color:var(--muted); font-weight:400; margin-left:8px; }
+  details > .body { padding:0 0 16px; }
+
   .strip svg { width:100%; height:auto; display:block; }
   .legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; font-size:12px; color:var(--ink2); }
   .legend span::before { content:""; display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; border:1px solid rgba(0,0,0,.08); }
   .legend .Good::before{background:var(--good)} .legend .Satisfactory::before{background:var(--sat)} .legend .Moderate::before{background:var(--mod)}
   .legend .Poor::before{background:var(--poor)} .legend .VeryPoor::before{background:var(--vpoor)} .legend .Severe::before{background:var(--severe)}
-  .tiles { display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); margin:14px 0; }
+
+  .tiles { display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); margin:12px 0 0; }
   .tile { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
   .tile .k { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
   .tile .v { font-family:Fraunces, Georgia, serif; font-size:30px; font-weight:500; margin-top:2px; line-height:1.1; }
   .tile .s { font-size:12px; color:var(--ink2); margin-top:4px; }
-  h3.section { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:22px 0 10px; }
-  .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); }
-  .card { position:relative; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); overflow:hidden; }
-  .card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--line); }
-  .card.Good::before{background:var(--good)} .card.Satisfactory::before{background:var(--sat)} .card.Moderate::before{background:var(--mod)}
-  .card.Poor::before{background:var(--poor)} .card.VeryPoor::before{background:var(--vpoor)} .card.Severe::before{background:var(--severe)}
-  .card .label { font-weight:600; font-size:15px; }
-  .card .when { color:var(--muted); font-size:13px; }
-  .card .call { margin:10px 0 6px; font-family:Fraunces, Georgia, serif; font-size:26px; font-weight:600; letter-spacing:-0.01em; }
-  .card .call .arrow { font-family:Inter; font-size:15px; font-weight:500; color:var(--ink2); margin-left:8px; }
-  .call.INDOORS{color:#8a1b25} .call.MOVE{color:#8a4b00} .call.OUTDOORS{color:#1f6b2a} .call.CAUTION{color:#8a4b00} .call.NO_CHANGE{color:var(--ink2)}
+
   .chip { display:inline-block; font-size:12px; font-weight:600; padding:3px 9px; border-radius:999px; background:#f1eee6; color:var(--ink2); }
-  .chip.ok{background:#e4f5e6;color:#1f6b2a} .chip.bad{background:#fde8e8;color:#8a1b25} .chip.wait{background:#fff4d6;color:#7a5200}
-  .num { font-weight:600; }
-  .reason { margin:8px 0 0; font-size:13px; color:var(--ink2); }
-  .status { margin-top:10px; font-size:12px; color:var(--muted); display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .chip.ok{background:#e4f5e6;color:var(--go)} .chip.bad{background:#fde8e8;color:var(--stop)} .chip.wait{background:#fff4d6;color:#7a5200}
+  .status { margin-top:8px; font-size:12px; color:var(--muted); display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   .row { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
   .panel { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px; }
   .panel h4 { margin:0 0 8px; font-size:14px; }
@@ -69,16 +117,30 @@
   .bubble .btn { display:block; margin-top:10px; text-align:center; background:#2aabee; color:#fff; border-radius:8px; padding:7px; font-weight:600; font-size:12px; }
   table { width:100%; border-collapse:collapse; font-size:13px; } th, td { text-align:left; padding:8px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
   th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; }
+  .tablewrap { overflow-x:auto; }
+
   button { font:inherit; padding:10px 14px; border-radius:10px; border:1px solid var(--line); background:#fff; cursor:pointer; font-weight:500; }
   button.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
-  button.danger { background:#fff; color:#8a1b25; border-color:#f3c4c4; }
+  button.danger { background:#fff; color:var(--stop); border-color:#f3c4c4; }
+  button.go { background:var(--go); color:#fff; border-color:var(--go); }
   button:hover { filter:brightness(.97); }
   input, select { font:inherit; padding:9px 10px; border:1px solid var(--line); border-radius:10px; width:100%; background:#fff; }
   label { font-size:12px; color:var(--muted); display:block; margin-bottom:4px; }
   .muted { color:var(--muted); }
+  .tbtns { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .tbtns button { flex:1; min-width:120px; padding:12px 14px; font-weight:600; }
+  .reasons { display:grid; gap:8px; margin-top:10px; max-width:460px; }
+  .reasons[hidden] { display:none; }
+  .reasons button { text-align:left; }
+  .tbtns { max-width:460px; }
+  .formstep { margin-top:18px; }
+  .formstep h4 { margin:0 0 8px; font-size:14px; display:flex; align-items:center; gap:8px; }
+  .formstep h4 .n { width:22px; height:22px; border-radius:50%; background:var(--ink); color:#fff; font-size:12px; display:inline-flex; align-items:center; justify-content:center; }
+
   .tip { position:fixed; pointer-events:none; background:#1b1d22; color:#fff; font-size:12px; padding:6px 9px; border-radius:8px; opacity:0; transform:translate(-50%, -120%); transition:opacity .08s; white-space:nowrap; z-index:50; }
   footer { color:var(--muted); font-size:12px; padding:30px 0 40px; }
-  @media (max-width:640px) { .brand h1{font-size:28px} .hero{padding:14px} .card .call{font-size:22px} }
+  @media (max-width:640px) { .brand h1{font-size:28px} .tagline{font-size:18px} .hero{padding:14px} .hero h2{font-size:22px} #where, #where > div { text-align:left !important; } }
+  body.teacher .tagline, body.teacher .tagline2, body.teacher nav { display:none; }
 </style>
 </head>
 <body>
@@ -89,12 +151,13 @@
         <svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 4c-1.7 0-3 1.3-3 3v1.2C11.5 9.5 8 14 8 19.5V27l-3 4h30l-3-4v-7.5c0-5.5-3.5-10-9-11.3V7c0-1.7-1.3-3-3-3z" fill="#15171a"/><path d="M16 33a4 4 0 0 0 8 0" stroke="#15171a" stroke-width="2.5" stroke-linecap="round"/></svg>
         <h1>Ghanti</h1>
       </div>
-      <p class="tagline">Every evening, one PE teacher gets tomorrow's call for each outdoor period: outdoors, indoors, or a later hour. Every afternoon, Ghanti checks the monitor and says whether the call was right.</p>
+      <p class="tagline">Should the children go outside tomorrow?</p>
+      <p class="tagline2">Ghanti answers that for every outdoor period of the school day, using tomorrow's hour-by-hour air forecast, and tells the PE teacher the evening before. The next afternoon it checks itself against the nearest government air monitor.</p>
     </div>
     <div id="where"></div>
   </header>
   <nav id="nav"></nav>
-  <main id="app">Loading...</main>
+  <main id="app"><p class="muted">Loading...</p></main>
   <footer>Forecast: CAMS via Open-Meteo. Same-hour station: World Air Quality Index project. Archive: OpenAQ. Monitors: CPCB and DPCC. Bands: India NAQI PM2.5 breakpoints applied to hourly values. Not medical advice.</footer>
 </div>
 <div class="tip" id="tip"></div>
@@ -108,7 +171,16 @@ const cls = (b) => (b || "").replace(/\s+/g, "");
 const BANDS = [[30,"Good"],[60,"Satisfactory"],[90,"Moderate"],[120,"Poor"],[250,"Very Poor"],[Infinity,"Severe"]];
 const COLORS = { Good:"var(--good)", Satisfactory:"var(--sat)", Moderate:"var(--mod)", Poor:"var(--poor)", "Very Poor":"var(--vpoor)", Severe:"var(--severe)" };
 const band = (v) => BANDS.find(([u]) => v <= u)[1];
-const CALLWORD = { OUTDOORS:"Outdoors", CAUTION:"Outdoors, keep it short", MOVE:"Move", INDOORS:"Indoors", NO_CHANGE:"No change" };
+const darkBand = (b) => b === "Poor" || b === "Very Poor" || b === "Severe";
+const CALLWORD = { OUTDOORS:"Go outdoors", CAUTION:"Outdoors, keep it short", MOVE:"Move", INDOORS:"Stay indoors", NO_CHANGE:"Keep as planned" };
+const verdictWord = (c) => c.call === "MOVE" ? `Move to ${c.move_to}` : (CALLWORD[c.call] || c.call);
+const GLYPH = {
+  OUTDOORS: '<svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3.5 9.5l3.5 3.5L14.5 5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  CAUTION: '<svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 5.2v4.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="12.6" r="1.1" fill="currentColor"/></svg>',
+  MOVE: '<svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h11M10 5l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  INDOORS: '<svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5L9 4l6 5.5V15H3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7.5 15v-4h3v4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+  NO_CHANGE: '<svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4 9h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+};
 const api = async (path, opts) => {
   const r = await fetch(API_BASE + path, { headers: { "Content-Type": "application/json" }, ...opts });
   if (!r.ok) throw new Error(await r.text());
@@ -117,11 +189,56 @@ const api = async (path, opts) => {
 const toHourly = (h) => Object.fromEntries(Object.entries(h || {}).map(([k, v]) => [parseInt(k, 10), +v]));
 const mins = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; };
 
-const ROUTES = { "#/": "Tomorrow", "#/try": "Try your school", "#/replay": "A November week" };
+const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const parseISO = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d); };
+const fmtDate = (iso) => { const d = parseISO(iso); return `${DAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}`; };
+function relDay(iso) {
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  const diff = Math.round((parseISO(iso) - t) / 86400000);
+  return diff === 0 ? "Today" : diff === 1 ? "Tomorrow" : diff > 1 ? "Next school day" : "Latest call";
+}
+
+const ROUTES = { "#/": "Tomorrow's plan", "#/try": "Try your school", "#/replay": "A smog week" };
 function nav(active) { $("#nav").innerHTML = Object.entries(ROUTES).map(([h, l]) => `<a href="${h}" class="${h === active ? "active" : ""}">${l}</a>`).join(""); }
 
-// The day strip: hourly air 06:00-18:00 as a band; above it two rows of slots,
-// "as timetabled" and "after the call", with overlapping slots stacked into lanes.
+// One plain sentence about the day: what happens to the periods, and the air range.
+function summarize(calls, hourly) {
+  if (!calls.length) return "No outdoor periods on this day.";
+  const n = calls.length, by = (k) => calls.filter((c) => c.call === k).length;
+  const out = by("OUTDOORS"), cau = by("CAUTION"), mv = by("MOVE"), ind = by("INDOORS"), nc = by("NO_CHANGE");
+  const parts = [];
+  if (mv) parts.push(`${mv} ${mv === 1 ? "moves" : "move"} to a cleaner hour`);
+  if (ind) parts.push(`${ind} ${ind === 1 ? "stays" : "stay"} indoors`);
+  if (cau) parts.push(`${cau} ${cau === 1 ? "goes" : "go"} ahead but kept short`);
+  if (out) parts.push(`${out} ${out === 1 ? "goes" : "go"} ahead as planned`);
+  if (nc) parts.push(`${nc} unchanged because moving would not help`);
+  let head = out === n ? `All ${n} outdoor periods go ahead as planned.`
+           : ind === n ? `All ${n} outdoor periods stay indoors.`
+           : `Of ${n} outdoor periods: ${parts.join(", ")}.`;
+  const vals = Object.entries(hourly).filter(([h]) => h >= 7 && h <= 16).map(([, v]) => v);
+  if (vals.length) {
+    const lo = Math.min(...vals), hi = Math.max(...vals), bl = band(lo), bh = band(hi);
+    head += ` Air during school hours: ${Math.round(lo)} to ${Math.round(hi)} µg/m³, ${bl === bh ? bl : bl + " to " + bh}.`;
+  }
+  return head;
+}
+
+// Twelve coloured boxes, 06:00 to 17:00, one per hour, with the PM2.5 number in each.
+function hourBand(hourly) {
+  let s = '<div class="hours">';
+  for (let h = 6; h < 18; h++) {
+    const v = hourly[h], hh = String(h).padStart(2, "0");
+    if (v == null) { s += `<div style="background:#eee9df;color:#8a8f98"><small class="w">${hh}:00</small><small class="n">${h}</small></div>`; continue; }
+    const b = band(v);
+    s += `<div data-tip="${hh}:00  ${Math.round(v)} µg/m³  ${b}" style="background:${COLORS[b]};color:${darkBand(b) ? "#fff" : "#15171a"}">${Math.round(v)}<small class="w">${hh}:00</small><small class="n">${h}</small></div>`;
+  }
+  return s + "</div>";
+}
+const PM_KEY = `PM2.5 is the fine dust that reaches deep into the lungs, in µg/m³. India's scale: 0-60 fine for everyone, 61-90 Moderate (young children take care), 91 and above Poor.`;
+
+// The day strip: hourly air 06:00-18:00 as a band; above it two rows of periods,
+// "as timetabled" and "after the call", with overlapping periods stacked into lanes.
 function lanes(items) {
   const rows = [];
   items.slice().sort((a, b) => a.m0 - b.m0).forEach((it) => {
@@ -137,7 +254,6 @@ function dayStrip(hourly, calls, minutesBySlot) {
   const short = (s) => s.length > 30 ? s.slice(0, 29) + "…" : s;
   const pxPerMin = (W - L - R) / (x1 - x0);
   const needPx = (txt) => txt.length * 6.6 + 14;
-  // x-extent in minutes: the box, plus the label when it does not fit inside the box
   const extent = (m0, d, txt) => (d * pxPerMin >= needPx(txt)) ? m0 + d : m0 + d + Math.ceil((needPx(txt) + 6) / pxPerMin);
   const before = (calls || []).map((c) => { const d = minutesBySlot[c.slot_id] || 40; const m0 = mins(c.start); return { c, m0, m1: m0 + d, ext: extent(m0, d, short(c.label)) }; });
   const after = (calls || []).map((c) => { const d = minutesBySlot[c.slot_id] || 40; const t = c.call === "MOVE" && c.move_to ? mins(c.move_to) : mins(c.start);
@@ -145,16 +261,16 @@ function dayStrip(hourly, calls, minutesBySlot) {
     return { c, m0: t, m1: t + d, ext: extent(t, d, short(lbl)) }; });
   const nA = lanes(before), nB = lanes(after);
   const yA = 34, yB = yA + nA * laneH + 30, stripY = yB + nB * laneH + 26, stripH = 34, axisY = stripY + stripH + 24, H = axisY + 10;
-  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Hourly PM2.5 across the school day with outdoor slots before and after the call">`;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Hourly PM2.5 across the school day with outdoor periods before and after the call">`;
   s += `<text x="${L}" y="${yA - 10}" font-size="11" fill="#8a8f98">As timetabled</text>`;
   s += `<text x="${L}" y="${yB - 10}" font-size="11" fill="#8a8f98">After the call</text>`;
-  s += `<text x="${L}" y="${stripY - 8}" font-size="11" fill="#8a8f98">PM2.5 by hour, ug/m3</text>`;
+  s += `<text x="${L}" y="${stripY - 8}" font-size="11" fill="#8a8f98">PM2.5 by hour, µg/m³</text>`;
   for (let h = 6; h < 18; h++) {
     const v = hourly[h], x = X(h * 60) + 1, w = X((h + 1) * 60) - X(h * 60) - 2;
     if (v == null) { s += `<rect x="${x}" y="${stripY}" width="${w}" height="${stripH}" rx="4" fill="#eee9df"/>`; continue; }
-    const b = band(v), dark = b === "Very Poor" || b === "Severe" || b === "Poor";
-    s += `<rect data-tip="${h}:00  ${Math.round(v)} ug/m3  ${b}" x="${x}" y="${stripY}" width="${w}" height="${stripH}" rx="4" fill="${COLORS[b]}" stroke="rgba(0,0,0,.08)"/>`;
-    s += `<text x="${x + w / 2}" y="${stripY + stripH / 2 + 4}" text-anchor="middle" font-size="12" font-weight="600" fill="${dark ? "#fff" : "#15171a"}">${Math.round(v)}</text>`;
+    const b = band(v);
+    s += `<rect data-tip="${h}:00  ${Math.round(v)} µg/m³  ${b}" x="${x}" y="${stripY}" width="${w}" height="${stripH}" rx="4" fill="${COLORS[b]}" stroke="rgba(0,0,0,.08)"/>`;
+    s += `<text x="${x + w / 2}" y="${stripY + stripH / 2 + 4}" text-anchor="middle" font-size="12" font-weight="600" fill="${darkBand(b) ? "#fff" : "#15171a"}">${Math.round(v)}</text>`;
   }
   for (let h = 6; h <= 18; h += 2) s += `<text x="${X(h * 60)}" y="${axisY}" text-anchor="middle" font-size="11" fill="#8a8f98">${String(h).padStart(2, "0")}:00</text>`;
   const box = (it, y, fill, stroke, dashed, label, tip, textColor) => {
@@ -166,15 +282,15 @@ function dayStrip(hourly, calls, minutesBySlot) {
   let arrows = "", boxes = "";
   before.forEach((it) => {
     const c = it.c, b = c.band || band(c.forecast_pm25), y = yA + it.lane * laneH;
-    boxes += box(it, y, COLORS[b], "rgba(0,0,0,.12)", false, c.label, `${c.label} ${c.start}: ${Math.round(c.forecast_pm25)} ug/m3, ${b}`, (b === "Poor" || b === "Very Poor" || b === "Severe") ? "#fff" : "#15171a");
+    boxes += box(it, y, COLORS[b], "rgba(0,0,0,.12)", false, c.label, `${c.label} ${c.start}: ${Math.round(c.forecast_pm25)} µg/m³, ${b}`, darkBand(b) ? "#fff" : "#15171a");
   });
   after.forEach((it, i) => {
     const c = it.c, y = yB + it.lane * laneH;
     if (c.call === "INDOORS") boxes += box(it, y, "#fff", "#b4252f", true, c.label + " · indoors", `${c.label}: indoors`, "#8a1b25");
     else if (c.call === "MOVE") { const v = c.move_to_pm25 ?? hourly[parseInt(c.move_to)]; const b = v != null ? band(v) : "Good";
-      boxes += box(it, y, COLORS[b], "#15171a", false, c.label + " → " + c.move_to, `${c.label} moved to ${c.move_to}: ${v != null ? Math.round(v) + " ug/m3, " + b : ""}`, (b === "Poor" || b === "Very Poor" || b === "Severe") ? "#fff" : "#15171a"); }
+      boxes += box(it, y, COLORS[b], "#15171a", false, c.label + " → " + c.move_to, `${c.label} moved to ${c.move_to}: ${v != null ? Math.round(v) + " µg/m³, " + b : ""}`, darkBand(b) ? "#fff" : "#15171a"); }
     else { const b = c.band || band(c.forecast_pm25);
-      boxes += box(it, y, COLORS[b], "rgba(0,0,0,.12)", c.call === "CAUTION", c.label + (c.call === "CAUTION" ? " · short" : ""), `${c.label}: ${CALLWORD[c.call]}`, (b === "Poor" || b === "Very Poor" || b === "Severe") ? "#fff" : "#15171a"); }
+      boxes += box(it, y, COLORS[b], "rgba(0,0,0,.12)", c.call === "CAUTION", c.label + (c.call === "CAUTION" ? " · short" : ""), `${c.label}: ${verdictWord(c)}`, darkBand(b) ? "#fff" : "#15171a"); }
     if (c.call === "MOVE") {
       const bi = before[i], xa = X(bi.m0) + Math.max(X(bi.m1) - X(bi.m0), 8) / 2, ya = yA + bi.lane * laneH + boxH;
       const xb = X(it.m0) + Math.max(X(it.m1) - X(it.m0), 8) / 2, yb = y;
@@ -185,74 +301,94 @@ function dayStrip(hourly, calls, minutesBySlot) {
   return `<div class="strip">${s}</div>
     <div class="legend">${Object.keys(COLORS).map((b) => `<span class="${cls(b)}">${b}${b === "Good" ? " 0-30" : b === "Satisfactory" ? " 31-60" : b === "Moderate" ? " 61-90" : b === "Poor" ? " 91-120" : b === "Very Poor" ? " 121-250" : " 251+"}</span>`).join("")}<span style="margin-left:auto">Dashed = indoors or shortened</span></div>`;
 }
+const stripDetails = (hourly, calls, minutesBySlot, open = false) =>
+  `<details ${open ? "open" : ""}><summary>Hour-by-hour picture<small>where each period sits in the day's air, before and after the call</small></summary><div class="body">${dayStrip(hourly, calls, minutesBySlot)}</div></details>`;
 
-function callCard(c, extra = "") {
+// One row per outdoor period: time, name, why, verdict, air.
+function periodRow(c, meta = {}, extra = "") {
   const b = c.band || band(c.forecast_pm25);
-  const move = c.call === "MOVE" ? `<span class="arrow">${esc(c.start)} → ${esc(c.move_to)}${c.move_to_pm25 != null ? ` (${Math.round(c.move_to_pm25)})` : ""}</span>` : "";
-  return `<div class="card ${cls(b)}">
-    <div class="label">${esc(c.label)}</div>
-    <div class="when">${esc(c.start)} · forecast <span class="num">${Math.round(c.forecast_pm25)}</span> ug/m3 · ${esc(b)}</div>
-    <div class="call ${esc(c.call)}">${CALLWORD[c.call] || esc(c.call)}${move}</div>
-    <p class="reason">${esc(c.reason)}</p>${extra}</div>`;
+  const m = [meta.minutes ? `${meta.minutes} min` : "", meta.headcount ? `${meta.headcount} children` : "", meta.intensity || ""].filter(Boolean).join(" · ");
+  const moved = c.call === "MOVE" && c.move_to_pm25 != null ? ` → ${Math.round(c.move_to_pm25)} at ${esc(c.move_to)}` : "";
+  return `<div class="period ${cls(b)}">
+    <div class="time">${esc(c.start)}</div>
+    <div class="mid"><div class="name">${esc(c.label)}</div>${m ? `<div class="meta">${esc(m)}</div>` : ""}<div class="why">${esc(c.reason)}</div>${extra}</div>
+    <div class="verdict ${esc(c.call)}"><div class="word">${GLYPH[c.call] || ""}<span>${esc(verdictWord(c))}</span></div>
+      <div class="air"><span class="dot" style="background:${COLORS[b]}"></span>${Math.round(c.forecast_pm25)} µg/m³ · ${esc(b)}${moved}</div></div></div>`;
 }
-const statusChip = (c) => c.status === "OK" ? `<span class="chip ok">Teacher: will do</span>` : c.status === "CANT" ? `<span class="chip bad">Teacher: can't${c.cant_reason ? ", " + esc(reasonText(c.cant_reason)) : ""}</span>` : c.status === "UPDATED" ? `<span class="chip wait">Updated at 6 AM</span>` : `<span class="chip">Sent, awaiting reply</span>`;
+const byStart = (calls) => calls.slice().sort((a, b) => mins(a.start) - mins(b.start));
+const statusChip = (c) => c.status === "OK" ? `<span class="chip ok">Teacher: will do</span>` : c.status === "CANT" ? `<span class="chip bad">Teacher: can't${c.cant_reason ? ", " + esc(reasonText(c.cant_reason)) : ""}</span>` : c.status === "UPDATED" ? `<span class="chip wait">Updated at 6 AM</span>` : `<span class="chip">Sent, awaiting the teacher's reply</span>`;
 const REASONS = { class_busy: "class has a test or event", teacher_busy: "teaching another class", ground_busy: "ground or hall is taken" };
 const reasonText = (k) => REASONS[k] || k;
 
-function sources(school, issued) {
+function howItWorks(school) {
+  return `<div class="steps">
+    <div class="step"><span class="n">1</span><b>6 PM, every evening</b><p>Ghanti reads tomorrow's hour-by-hour air forecast for the school's location.</p></div>
+    <div class="step"><span class="n">2</span><b>One call per outdoor period</b><p>Go outdoors, keep it short, move to a cleaner hour, or stay indoors. The PE teacher gets the list on Telegram and taps OK or Can't.</p></div>
+    <div class="step"><span class="n">3</span><b>3 PM, the next day</b><p>Ghanti checks the nearest government air monitor and records whether each call was right.</p></div>
+  </div>
+  <div class="intro-foot"><span>Running live for <b>${esc(school.name || "")}, ${esc(school.city || "")}</b>. Real location, real air, real monitors${school.illustrative ? "; the timetable is an illustrative one until a school shares theirs" : ""}.</span>
+    <span>Built on <span class="aws">AWS Lambda</span> <span class="aws">DynamoDB</span> <span class="aws">EventBridge</span> <span class="aws">Amazon Bedrock · Nova Lite</span> <span class="aws">Amplify</span></span></div>`;
+}
+
+function sources(school) {
   const st = school?.station, w = school?.waqi_station;
-  return `<div class="panel" style="margin-top:18px"><h4>Where this comes from</h4><div class="sources">
-    <div><b>Forecast</b>CAMS global model via Open-Meteo. About 45 km grid, updated every 12 hours${issued ? `; this one ${esc(issued)}` : ""}. A model, not a station.</div>
+  return `<details><summary>Where the data comes from</summary><div class="body"><div class="sources">
+    <div><b>Forecast</b>CAMS global model via Open-Meteo. About 45 km grid, updated every 12 hours. A model, not a station.</div>
     <div><b>Same-hour station</b>${w ? esc(w) : "not linked"}, via the World Air Quality Index project, read every hour. Used for the 6 AM re-check and the 3 PM verification.</div>
     <div><b>Archive station</b>${st ? `${esc(st.name)}, ${esc(st.distance_km)} km away, last reported ${esc(st.last_seen)}` : "not linked"} via OpenAQ. Arrives 1-2 days late and then replaces same-hour values in the ledger.</div>
-    <div><b>The call</b>A fixed set of rules in <code>rules.py</code> (14 tests). Amazon Nova writes the message and never changes a call. India NAQI bands applied to hourly values, which is a simplification.</div>
-  </div></div>`;
+    <div><b>The call</b>A fixed set of rules in <code>rules.py</code> (14 tests). A Strands agent on Amazon Nova Lite fetches the forecast, asks the rules, and writes the opening lines of the message; it never changes a call. India NAQI bands applied to hourly values, which is a simplification.</div>
+  </div></div></details>`;
 }
 
 async function viewTomorrow() {
   nav("#/");
+  $("#app").innerHTML = "<p class='muted'>Loading the plan...</p>";
   const [school, data, ledger] = await Promise.all([api("/school"), api("/calls"), api("/ledger")]);
-  const calls = data.calls || [], hourly = toHourly(data.forecast), rows = ledger.ledger || [];
+  const calls = byStart(data.calls || []), hourly = toHourly(data.forecast), rows = ledger.ledger || [];
+  const slotMeta = Object.fromEntries((school.slots || []).map((s) => [s.slot_id, s]));
   const minutesBySlot = Object.fromEntries((school.slots || []).map((s) => [s.slot_id, s.minutes]));
-  const moved = calls.filter((c) => c.call === "MOVE" || c.call === "INDOORS");
-  const hoursMoved = moved.reduce((a, c) => a + (+c.children_hours || 0), 0);
   const verified = rows.filter((r) => r.measured_pm25 != null);
   const right = verified.filter((r) => r.call_was_right).length;
   const msg = calls[0]?.message || "No call yet for this date. The 6 PM job writes it.";
   $("#where").innerHTML = `<div style="text-align:right"><span class="tag live">Live</span><div class="muted" style="font-size:13px;margin-top:6px">${esc(school.name || "")}, ${esc(school.city || "")}</div></div>`;
   $("#app").innerHTML = `
+    ${howItWorks(school)}
+    <h3 class="section">The plan</h3>
     <section class="hero">
-      <div class="head"><h2>${esc(data.date)}: ${data.date > new Date().toISOString().slice(0,10) ? "tomorrow's call" : "the latest call"}</h2><span class="sub">${school.illustrative ? "Illustrative timetable at a real location; " : ""}real forecast, real monitors</span></div>
-      ${dayStrip(hourly, calls, minutesBySlot)}
+      <div class="head"><h2>${relDay(data.date)}: ${fmtDate(data.date)}</h2><span class="sub">forecast air, ${calls.length} outdoor period${calls.length === 1 ? "" : "s"}</span></div>
+      <p class="summary">${esc(summarize(calls, hourly))}</p>
+      ${hourBand(hourly)}
+      <p class="key">${PM_KEY}</p>
     </section>
-    <div class="tiles">
-      <div class="tile"><div class="k">Outdoor slots tomorrow</div><div class="v">${calls.length}</div><div class="s">${moved.length} moved or taken indoors</div></div>
-      <div class="tile"><div class="k">Children-hours moved</div><div class="v">${Math.round(hoursMoved)}</div><div class="s">out of Poor-or-worse air</div></div>
-      <div class="tile"><div class="k">Calls verified so far</div><div class="v">${verified.length ? `${right}/${verified.length}` : "0"}</div><div class="s">${verified.length ? "right, against the monitor" : "first check at 3 PM"}</div></div>
-      <div class="tile"><div class="k">Nearest monitor</div><div class="v" style="font-size:20px">${esc((school.waqi_station || "").split(",")[0] || "linking")}</div><div class="s">${school.station ? `${esc(school.station.distance_km)} km archive at ${esc(school.station.name.split(",")[0])}` : ""}</div></div>
-    </div>
-    <h3 class="section">Each slot</h3>
-    <div class="grid">${calls.map((c) => callCard(c, `<div class="status">${statusChip(c)}</div>`)).join("") || "<p class='muted'>No outdoor slots for this date.</p>"}</div>
+    <h3 class="section">Period by period</h3>
+    <div class="periods">${calls.map((c) => periodRow(c, slotMeta[c.slot_id], `<div class="status">${statusChip(c)}</div>`)).join("") || "<p class='muted'>No outdoor periods for this date.</p>"}</div>
+    ${stripDetails(hourly, calls, minutesBySlot)}
     <h3 class="section">What the teacher received</h3>
     <div class="row">
       <div class="phone"><div class="app">Telegram · Ghanti</div><div class="bubble">${esc(msg)}<span class="btn">Confirm or object</span></div></div>
-      <div style="flex:1;min-width:300px">
-        <div class="panel"><h4>Ledger</h4>${ledgerTable(rows)}</div>
-        <div class="panel" style="margin-top:12px"><h4>How this call was made</h4>
+      <div style="flex:1;min-width:280px">
+        <div class="panel"><h4>What happens next</h4>
+          <p style="margin:0;font-size:13px;color:var(--ink2)">The teacher opens the link, sees this same list, and taps <b>OK</b> or <b>Can't</b> for each period. A Can't (test, teaching elsewhere, ground taken) re-plans only that period and tells the coordinator. At 6:10 AM Ghanti compares the forecast with the monitor's latest reading and updates any call that is off by more than 40%.</p></div>
+        <details><summary>How this call was made<small>agent trace</small></summary><div class="body">
           <ol style="margin:0;padding-left:18px;font-size:13px;color:var(--ink2)">${(data.trace || []).map((t) => `<li>${esc(t)}</li>`).join("") || "<li>Trace not recorded for this date.</li>"}</ol>
-          <p class="muted" style="font-size:12px;margin:8px 0 0">A Strands agent on Amazon Nova Lite calls the forecast tool and the rules tool, then writes the two-sentence summary. The per-slot lines come from the rules; the agent cannot change a call.${data.issued ? " Forecast fetched " + esc(data.issued) + "." : ""}</p></div>
+          <p class="muted" style="font-size:12px;margin:8px 0 0">A Strands agent on Amazon Nova Lite calls the forecast tool and the rules tool, then writes the opening of the message. The per-period lines come from the rules; the agent cannot change a call.</p></div></details>
       </div>
     </div>
-    ${sources(school, data.forecast ? "issued for " + esc(data.date) : null)}`;
+    <h3 class="section">Track record</h3>
+    <section class="hero">
+      <div class="head"><h2>${verified.length ? `${right} of ${verified.length} calls were right` : "No calls checked yet"}</h2><span class="sub">${verified.length ? "checked against the nearest monitor at 3 PM" : "the first check runs at 3 PM after the first school day"}</span></div>
+      ${ledgerTable(rows)}
+    </section>
+    ${sources(school)}`;
   wireTips();
 }
 
 function ledgerTable(rows) {
-  if (!rows.length) return "<p class='muted' style='margin:0'>Empty until the first 3 PM check. Each row: what the forecast said, what the monitor measured, whether the call was right.</p>";
-  return `<table><tr><th>Date</th><th>Slot</th><th>Call</th><th>Forecast</th><th>Measured</th><th>Verdict</th><th>Children-hours</th></tr>
-    ${rows.map((r) => `<tr><td>${esc(r.date)}</td><td>${esc(r.label)}</td><td>${CALLWORD[r.call] || esc(r.call)}${r.move_to ? " → " + esc(r.move_to) : ""}</td>
+  if (!rows.length) return "<p class='muted' style='margin:6px 0 0'>Each row will show what the forecast said, what the monitor measured, and whether the call was right.</p>";
+  return `<div class="tablewrap"><table><tr><th>Date</th><th>Period</th><th>Call</th><th>Forecast</th><th>Measured</th><th>Right?</th><th>Child-hours moved</th></tr>
+    ${rows.map((r) => `<tr><td>${esc(fmtDate(r.date).replace(/^\w+, /, ""))}</td><td>${esc(r.label)}</td><td>${CALLWORD[r.call] || esc(r.call)}${r.move_to ? " → " + esc(r.move_to) : ""}</td>
     <td>${Math.round(r.forecast_pm25)}</td><td>${r.measured_pm25 == null ? "<span class='chip wait'>awaiting station</span>" : Math.round(r.measured_pm25)}</td>
-    <td>${r.call_was_right == null ? "<span class='chip'>unverified</span>" : r.call_was_right ? "<span class='chip ok'>right</span>" : "<span class='chip bad'>wrong</span>"}</td><td>${esc(r.children_hours_moved)}</td></tr>`).join("")}</table>`;
+    <td>${r.call_was_right == null ? "<span class='chip'>not yet</span>" : r.call_was_right ? "<span class='chip ok'>right</span>" : "<span class='chip bad'>wrong</span>"}</td><td>${esc(r.children_hours_moved)}</td></tr>`).join("")}</table></div>`;
 }
 
 async function viewTeacher(token) {
@@ -260,18 +396,26 @@ async function viewTeacher(token) {
   let data, school;
   try { [data, school] = await Promise.all([api("/teacher?token=" + encodeURIComponent(token)), api("/school")]); }
   catch (e) { $("#app").innerHTML = "<p>This link is not valid.</p>"; return; }
+  const slotMeta = Object.fromEntries((school.slots || []).map((s) => [s.slot_id, s]));
   const minutesBySlot = Object.fromEntries((school.slots || []).map((s) => [s.slot_id, s.minutes]));
   let hourly = {};
   try { hourly = toHourly((await api("/calls?date=" + data.date)).forecast); } catch (e) {}
   $("#where").innerHTML = `<span class="tag live">Teacher view</span>`;
   const render = (calls) => {
-    $("#app").innerHTML = `<section class="hero"><div class="head"><h2>Your slots on ${esc(data.date)}</h2><span class="sub">Tap OK if you can do it. Tap Can't and pick why; only your slot re-plans.</span></div>
-      ${dayStrip(hourly, calls, minutesBySlot)}</section>
-      <div class="grid" style="margin-top:14px">${calls.map((c) => callCard(c, teacherButtons(c, data.reasons))).join("")}</div>`;
+    calls = byStart(calls);
+    $("#app").innerHTML = `<section class="hero"><div class="head"><h2>${relDay(data.date)}: ${fmtDate(data.date)}</h2><span class="sub">${esc(school.name || "")}</span></div>
+      <p class="summary">${esc(summarize(calls, hourly))}</p>
+      <p class="key">For each period below, tap <b>OK, will do</b> if you can follow the call. Tap <b>Can't</b> and pick a reason if not; only that period is re-planned, and the coordinator is told.</p></section>
+      <div class="periods" style="margin-top:14px">${calls.map((c) => periodRow(c, slotMeta[c.slot_id], teacherButtons(c, data.reasons))).join("")}</div>
+      ${stripDetails(hourly, calls, minutesBySlot)}`;
     document.querySelectorAll("[data-ok]").forEach((b) => b.onclick = () => reply(b.dataset.ok, "ok"));
     document.querySelectorAll("[data-cant]").forEach((b) => b.onclick = () => {
-      const slot = b.dataset.cant;
-      reply(slot, "cant", document.querySelector(`select[data-reason="${slot}"]`).value, document.querySelector(`input[data-note="${slot}"]`).value);
+      const box = document.querySelector(`[data-reasons="${b.dataset.cant}"]`);
+      box.hidden = !box.hidden;
+    });
+    document.querySelectorAll("[data-why]").forEach((b) => b.onclick = () => {
+      const slot = b.dataset.slot;
+      reply(slot, "cant", b.dataset.why, document.querySelector(`input[data-note="${slot}"]`).value);
     });
     wireTips();
   };
@@ -285,12 +429,13 @@ async function viewTeacher(token) {
 function teacherButtons(c, reasons) {
   if (c.status === "OK") return `<div class="status"><span class="chip ok">You confirmed this</span></div>`;
   if (c.status === "CANT") return `<div class="status"><span class="chip bad">You said: ${esc(reasons[c.cant_reason] || c.cant_reason)}</span></div>`;
-  const opts = Object.entries(reasons).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("");
-  return `<div style="margin-top:12px; display:grid; gap:8px">
-    <button class="primary" data-ok="${esc(c.slot_id)}">OK, will do</button>
-    <select data-reason="${esc(c.slot_id)}">${opts}</select>
-    <input data-note="${esc(c.slot_id)}" placeholder="Optional note for the coordinator">
-    <button class="danger" data-cant="${esc(c.slot_id)}">Can't</button></div>`;
+  const id = esc(c.slot_id);
+  return `<div class="tbtns"><button class="go" data-ok="${id}">OK, will do</button><button class="danger" data-cant="${id}">Can't</button></div>
+    <div class="reasons" data-reasons="${id}" hidden>
+      <label>Why not? Tap one.</label>
+      ${Object.entries(reasons).map(([k, v]) => `<button data-why="${esc(k)}" data-slot="${id}">${esc(v)}</button>`).join("")}
+      <input data-note="${id}" placeholder="Optional note for the coordinator">
+    </div>`;
 }
 
 const DEFAULT_SLOTS = [
@@ -304,14 +449,17 @@ const DEFAULT_SLOTS = [
 async function viewTry() {
   nav("#/try");
   $("#where").innerHTML = `<span class="tag">Sandbox</span>`;
-  $("#app").innerHTML = `<section class="hero"><div class="head"><h2>Try your school</h2><span class="sub">Any coordinates, tomorrow's forecast or any past day's air. Nothing is stored.</span></div>
-      <div class="row" style="margin-top:6px">
+  $("#app").innerHTML = `<section class="hero"><div class="head"><h2>Try your school</h2><span class="sub">same rules, live forecast, nothing stored</span></div>
+      <p class="summary" style="font-size:15px;color:var(--ink2)">Put in any school's location and outdoor periods and get the call Ghanti would send. The defaults are a typical Delhi school day; change anything.</p>
+      <div class="formstep"><h4><span class="n">1</span>Where is the school?</h4>
+      <div class="row">
         <div style="flex:2;min-width:200px"><label>School name</label><input id="t-name" value="My school"></div>
         <div style="flex:1;min-width:120px"><label>Latitude</label><input id="t-lat" value="28.7234"></div>
         <div style="flex:1;min-width:120px"><label>Longitude</label><input id="t-lon" value="77.1123"></div>
         <div style="align-self:flex-end"><button id="t-geo">Use my location</button></div>
-      </div>
-      <table style="margin-top:14px"><tr><th>Slot</th><th>Start</th><th>Minutes</th><th>Children</th><th>Intensity</th><th>Youngest</th></tr>
+      </div></div>
+      <div class="formstep"><h4><span class="n">2</span>Outdoor periods</h4>
+      <div class="tablewrap"><table><tr><th>Period</th><th>Start</th><th>Minutes</th><th>Children</th><th>Effort</th><th>Youngest age</th></tr>
         ${DEFAULT_SLOTS.map((s, i) => `<tr>
           <td><input data-f="label" data-i="${i}" value="${esc(s.label)}"></td>
           <td><input data-f="start" data-i="${i}" value="${s.start}"></td>
@@ -319,16 +467,19 @@ async function viewTry() {
           <td><input data-f="headcount" data-i="${i}" value="${s.headcount}"></td>
           <td><select data-f="intensity" data-i="${i}">${["light","moderate","vigorous"].map((x) => `<option ${x === s.intensity ? "selected" : ""}>${x}</option>`).join("")}</select></td>
           <td><input data-f="max_age" data-i="${i}" value="${s.max_age}"></td></tr>`).join("")}
-      </table>
-      <div class="row" style="margin-top:14px;align-items:flex-end">
-        <div style="flex:2;min-width:220px"><label>Hours the ground is free for a moved slot (HH:MM, comma-separated)</label><input id="t-win" value="11:50, 12:30, 13:20"></div>
-        <div style="flex:1;min-width:160px"><label>Day (blank = tomorrow; a past date replays that day)</label><input id="t-date" placeholder="2025-11-12"></div>
-        <div><button class="primary" id="t-go">Get the call</button></div>
-      </div>
-      <p class="muted" style="font-size:13px;margin:10px 0 0">Try <b>2025-11-12</b> at the Delhi coordinates for a winter day. On a Move card, tap "Teacher can't" and watch it re-plan.</p>
+      </table></div></div>
+      <div class="formstep"><h4><span class="n">3</span>When could a period be moved to?</h4>
+        <label>Hours the ground is free (HH:MM, comma-separated)</label><input id="t-win" value="11:50, 12:30, 13:20" style="max-width:360px"></div>
+      <div class="formstep"><h4><span class="n">4</span>Which day?</h4>
+      <div class="row" style="align-items:flex-end">
+        <div style="min-width:180px"><label>Leave blank for tomorrow; a past date replays that day's air</label><input id="t-date" type="date"></div>
+        <div><button id="t-smog">Use a smog day: 12 Nov 2025</button></div>
+        <div style="margin-left:auto"><button class="primary" id="t-go" style="padding:12px 22px">Get the call</button></div>
+      </div></div>
     </section>
     <div id="t-out"></div>`;
   $("#t-geo").onclick = () => navigator.geolocation?.getCurrentPosition((p) => { $("#t-lat").value = p.coords.latitude.toFixed(4); $("#t-lon").value = p.coords.longitude.toFixed(4); });
+  $("#t-smog").onclick = () => { $("#t-date").value = "2025-11-12"; };
   let excluded = [];
   const run = async () => {
     const slots = DEFAULT_SLOTS.map((s, i) => {
@@ -336,6 +487,7 @@ async function viewTry() {
       return { slot_id: s.slot_id, label: get("label"), start: get("start"), minutes: +get("minutes"), headcount: +get("headcount"),
                intensity: get("intensity"), max_age: +get("max_age"), weekdays: ["mon","tue","wed","thu","fri","sat","sun"] };
     });
+    const slotMeta = Object.fromEntries(slots.map((s) => [s.slot_id, s]));
     const minutesBySlot = Object.fromEntries(slots.map((s) => [s.slot_id, s.minutes]));
     $("#t-out").innerHTML = "<p class='muted' style='margin:14px 0'>Fetching the air for that day...</p>";
     try {
@@ -343,17 +495,19 @@ async function viewTry() {
         name: $("#t-name").value, lat: $("#t-lat").value, lon: $("#t-lon").value, slots,
         move_windows: $("#t-win").value.split(",").map((x) => x.trim()).filter(Boolean),
         date: $("#t-date").value.trim() || undefined, excluded_windows: excluded }) });
-      const hourly = toHourly(out.hourly);
-      const cantBtn = (c) => c.call === "MOVE" ? `<div class="status"><button class="danger" data-cantwin="${esc(c.move_to)}">Teacher can't do ${esc(c.move_to)}</button></div>` : "";
-      $("#t-out").innerHTML = `<section class="hero" style="margin-top:14px"><div class="head"><h2>${esc(out.date)} (${esc(out.weekday)})</h2><span class="tag ${out.replay ? "replay" : "live"}">${out.replay ? "Replay, modelled air" : "Live forecast"}</span></div>
-        ${dayStrip(hourly, out.calls, minutesBySlot)}
-        ${excluded.length ? `<p class="muted" style="font-size:13px">Windows the teacher ruled out: ${excluded.map(esc).join(", ")}. <a href="#" id="t-reset">Reset</a></p>` : ""}</section>
-        <div class="grid" style="margin-top:14px">${out.calls.map((c) => callCard(c, cantBtn(c))).join("")}</div>
+      const hourly = toHourly(out.hourly), calls = byStart(out.calls);
+      const cantBtn = (c) => c.call === "MOVE" ? `<div class="tbtns" style="margin-top:8px"><button class="danger" style="flex:none" data-cantwin="${esc(c.move_to)}">Teacher can't do ${esc(c.move_to)}</button></div>` : "";
+      $("#t-out").innerHTML = `<h3 class="section">The call</h3><section class="hero"><div class="head"><h2>${fmtDate(out.date)}</h2><span class="tag ${out.replay ? "replay" : "live"}">${out.replay ? "Replay, modelled air" : "Live forecast"}</span></div>
+        <p class="summary">${esc(summarize(calls, hourly))}</p>${hourBand(hourly)}
+        ${excluded.length ? `<p class="key">Hours the teacher ruled out: ${excluded.map(esc).join(", ")}. <a href="#" id="t-reset">Reset</a></p>` : `<p class="key">${PM_KEY}</p>`}</section>
+        <div class="periods" style="margin-top:14px">${calls.map((c) => periodRow(c, slotMeta[c.slot_id], cantBtn(c))).join("")}</div>
+        ${stripDetails(hourly, calls, minutesBySlot)}
         <div class="row" style="margin-top:16px"><div class="phone"><div class="app">Telegram · Ghanti</div><div class="bubble">${esc(out.message)}<span class="btn">Confirm or object</span></div></div>
-        <div class="panel" style="flex:1;min-width:280px"><h4>Source</h4><p class="muted" style="font-size:13px;margin:0">${esc(out.source)}</p></div></div>`;
+        <div class="panel" style="flex:1;min-width:280px"><h4>Source</h4><p class="muted" style="font-size:13px;margin:0">${esc(out.source)}</p>${calls.some((c) => c.call === "MOVE") ? `<p class="muted" style="font-size:13px;margin:8px 0 0">On a moved period, tap "Teacher can't" to see the plan redo itself without that hour.</p>` : ""}</div></div>`;
       document.querySelectorAll("[data-cantwin]").forEach((b) => b.onclick = () => { excluded.push(b.dataset.cantwin); run(); });
       const r = $("#t-reset"); if (r) r.onclick = (ev) => { ev.preventDefault(); excluded = []; run(); };
       wireTips();
+      $("#t-out").scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (e) { $("#t-out").innerHTML = `<p>Could not compute: ${esc(e.message)}</p>`; }
   };
   $("#t-go").onclick = () => { excluded = []; run(); };
@@ -367,16 +521,20 @@ async function viewReplay() {
   $("#app").innerHTML = "<p class='muted'>Running the same rules over a real November week...</p>";
   const school = await api("/school");
   const slots = (school.slots || []).map((s) => ({ ...s }));
+  const slotMeta = Object.fromEntries(slots.map((s) => [s.slot_id, s]));
   const minutesBySlot = Object.fromEntries(slots.map((s) => [s.slot_id, s.minutes]));
   const days = await Promise.all(REPLAY_DAYS.map((date) => api("/sandbox", { method: "POST", body: JSON.stringify({
     name: school.name, lat: school.lat, lon: school.lon, slots, move_windows: school.move_windows || [], date }) })));
   const all = days.flatMap((d) => d.calls);
   const moves = all.filter((c) => c.call === "MOVE").length, indoors = all.filter((c) => c.call === "INDOORS").length;
   const hours = all.reduce((a, c) => a + (+c.children_hours || 0), 0);
-  $("#app").innerHTML = `<section class="hero"><div class="head"><h2>Same school, a real November week</h2><span class="sub">10-14 Nov 2025, modelled air (CAMS) for these coordinates, same rules, computed live</span></div>
-      <div class="tiles" style="margin:6px 0 0"><div class="tile"><div class="k">Slots moved</div><div class="v">${moves}</div></div><div class="tile"><div class="k">Taken indoors</div><div class="v">${indoors}</div></div><div class="tile"><div class="k">Children-hours out of bad air</div><div class="v">${Math.round(hours)}</div><div class="s">if every call had been followed</div></div></div></section>
-    ${days.map((d) => `<section class="hero" style="margin-top:14px"><div class="head"><h2>${esc(d.date)} (${esc(d.weekday)})</h2><span class="tag replay">Replay</span></div>${dayStrip(toHourly(d.hourly), d.calls, minutesBySlot)}</section>
-      <div class="grid" style="margin-top:12px">${d.calls.map((c) => callCard(c)).join("")}</div>`).join("")}`;
+  $("#app").innerHTML = `<section class="hero"><div class="head"><h2>What Ghanti would have said in the smog</h2><span class="sub">10-14 November 2025</span></div>
+      <p class="summary" style="font-size:15px;color:var(--ink2)">Right now Delhi's air is fine and every call says "go outdoors". This is the same school and the same rules on a real week of last November's smog: modelled air for these coordinates, computed live when you opened this page.</p>
+      <div class="tiles"><div class="tile"><div class="k">Periods moved</div><div class="v">${moves}</div><div class="s">to a cleaner hour</div></div><div class="tile"><div class="k">Taken indoors</div><div class="v">${indoors}</div><div class="s">no clean hour that day</div></div><div class="tile"><div class="k">Child-hours out of bad air</div><div class="v">${Math.round(hours)}</div><div class="s">if every call had been followed</div></div></div></section>
+    ${days.map((d) => { const calls = byStart(d.calls), hourly = toHourly(d.hourly); return `<h3 class="section">${esc(fmtDate(d.date))}</h3>
+      <section class="hero"><p class="summary" style="margin-top:0">${esc(summarize(calls, hourly))}</p>${hourBand(hourly)}</section>
+      <div class="periods" style="margin-top:12px">${calls.map((c) => periodRow(c, slotMeta[c.slot_id])).join("")}</div>
+      ${stripDetails(hourly, calls, minutesBySlot)}`; }).join("")}`;
   wireTips();
 }
 
@@ -390,13 +548,14 @@ function wireTips() {
 
 async function route() {
   const h = location.hash || "#/";
+  document.body.classList.toggle("teacher", h.startsWith("#/t/"));
   try {
     if (h.startsWith("#/t/")) return await viewTeacher(h.slice(4));
     if (h === "#/try") return await viewTry();
     if (h === "#/replay") return await viewReplay();
     return await viewTomorrow();
   } catch (e) {
-    $("#app").innerHTML = `<p>Could not load: ${esc(e.message)}. Hard-refresh the page; if it persists, the API is down.</p>`;
+    $("#app").innerHTML = `<p>Could not load: ${esc(e.message)}. Refresh the page; if it persists, the API is down.</p>`;
   }
 }
 window.addEventListener("hashchange", route);

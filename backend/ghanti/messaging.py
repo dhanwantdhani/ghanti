@@ -19,12 +19,18 @@ def template_text(school_name, date, calls, teacher_url=None):
     the move window if any, and the forecast value with its band. Append the
     teacher link when given.
     """
-    lines = [f"Ghanti call for {school_name}, {date}:"]
+    import datetime as _dt
+    try:
+        d = _dt.date.fromisoformat(date)
+        nice = f"{d.strftime('%A')} {d.day} {d.strftime('%B')}"
+    except ValueError:
+        nice = date
+    lines = [f"Ghanti call for {school_name}, {nice}:"]
     for c in calls:
         where = {"OUTDOORS": "outdoors", "CAUTION": "outdoors, keep it short",
                  "INDOORS": "indoors", "NO_CHANGE": "as planned",
                  "MOVE": f"move to {c.get('move_to')}"}[c["call"]]
-        lines.append(f"- {c['label']} ({c['start']}): {where}. Forecast {round(c['forecast_pm25'])} ug/m3, {c['band']}.")
+        lines.append(f"- {c['label']} ({c['start']}): {where}. Forecast {round(c['forecast_pm25'])} µg/m³, {c['band']}.")
     if teacher_url:
         lines.append(f"Confirm or object: {teacher_url}")
     lines.append("Forecast: CAMS model via Open-Meteo, 45 km grid. Not medical advice.")

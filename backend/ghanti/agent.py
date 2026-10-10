@@ -20,8 +20,26 @@ Procedure, always in this order:
 3. Write the opening of the evening message to the teacher: at most two sentences, plain English,
    no emoji, no markdown. Sentence one: what the day's air looks like and when it is worst and best.
    Sentence two: what changes (which slots move or go indoors), or that nothing changes.
+   Only say a slot moves or goes indoors if decide_calls returned MOVE or INDOORS for it. If it
+   returned none of those, sentence two must say every period goes ahead outdoors.
    Do not list every slot; the system appends the exact list after your text.
 Your final reply must be those sentences only."""
+
+
+def contradicts(prose, calls):
+    """True when the prose claims a change the rules did not make.
+
+    Algorithm: lower-case the prose; if no call is INDOORS and the prose
+    mentions "indoor", or no call is MOVE and the prose mentions "move",
+    "moved", "shift" or "postpone", the prose contradicts the calls.
+    """
+    p = prose.lower()
+    kinds = {c["call"] for c in calls}
+    if "INDOORS" not in kinds and "indoor" in p:
+        return True
+    if "MOVE" not in kinds and re.search(r"\b(move|moved|moving|shift|shifted|postpone|postponed)\b", p):
+        return True
+    return False
 
 
 def plan_with_agent(school, date, weekday, excluded_windows=None):
@@ -79,6 +97,9 @@ def plan_with_agent(school, date, weekday, excluded_windows=None):
     prose = " ".join(prose.split())
     if not prose or len(prose) > 600:
         trace.append("agent prose rejected: empty or too long")
+        return calls, box.get("hourly"), None, trace
+    if contradicts(prose, calls):
+        trace.append("agent prose rejected: it claimed a move or indoors the rules did not make; template used")
         return calls, box.get("hourly"), None, trace
     trace.append("agent prose accepted; exact slot lines appended by the rules")
     return calls, box.get("hourly"), prose, trace

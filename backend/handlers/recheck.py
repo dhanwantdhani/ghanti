@@ -48,7 +48,7 @@ def handler(event=None, context=None):
             changed.append(c.to_dict())
     if changed:
         token = calls[0].get("token")
-        text = (f"Updated {ts_hour[11:13]}:00: station {school['station']['name']} reads {round(measured)} ug/m3, "
+        text = (f"Updated {ts_hour[11:13]}:00: station {school['station']['name']} reads {round(measured)} µg/m³, "
                 f"forecast was {round(f)}.\n" + messaging.template_text(school["name"], date, changed))
         url = teacher_url(token)
         messaging.telegram_send(school.get("coordinator_chat_id"), text, url, "Open the updated plan")
