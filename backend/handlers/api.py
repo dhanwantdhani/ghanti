@@ -52,8 +52,9 @@ def handler(event, context=None):
         if not calls and not qs.get("date"):
             # no plan for tomorrow (weekend or not yet 6 PM): show the latest planned day
             import datetime as _dt
-            for back in range(0, 8):
-                date = (_dt.date.fromisoformat(tomorrow()[0]) - _dt.timedelta(days=back)).isoformat()
+            t = _dt.date.fromisoformat(tomorrow()[0])
+            for delta in (1, 2, 3, -1, -2, -3, -4, -5, -6, -7):   # nearest planned day ahead first, then back
+                date = (t + _dt.timedelta(days=delta)).isoformat()
                 calls = store.get_calls(live_school_id(), date)
                 if calls:
                     break
