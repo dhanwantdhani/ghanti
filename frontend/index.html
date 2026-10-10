@@ -369,7 +369,7 @@ async function viewTomorrow() {
       <div style="flex:1;min-width:280px">
         <div class="panel"><h4>What happens next</h4>
           <p style="margin:0;font-size:13px;color:var(--ink2)">The teacher opens the link, sees this same list, and taps <b>OK</b> or <b>Can't</b> for each period. A Can't (test, teaching elsewhere, ground taken) re-plans only that period and tells the coordinator. At 6:10 AM Ghanti compares the forecast with the monitor's latest reading and updates any call that is off by more than 40%.</p></div>
-        <details><summary>How this call was made<small>agent trace</small></summary><div class="body">
+        <details open><summary>How this call was made<small>Strands agent on Amazon Bedrock, Nova Lite</small></summary><div class="body">
           <ol style="margin:0;padding-left:18px;font-size:13px;color:var(--ink2)">${(data.trace || []).map((t) => `<li>${esc(t)}</li>`).join("") || "<li>Trace not recorded for this date.</li>"}</ol>
           <p class="muted" style="font-size:12px;margin:8px 0 0">A Strands agent on Amazon Nova Lite calls the forecast tool and the rules tool, then writes the opening of the message. The per-period lines come from the rules; the agent cannot change a call.</p></div></details>
       </div>
