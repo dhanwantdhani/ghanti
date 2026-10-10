@@ -49,6 +49,19 @@ def fetch_archive(lat, lon, start_date, end_date):
     return _by_day(r.json())
 
 
+def fetch_for_date(lat, lon, date):
+    """Hourly PM2.5 for one date: archive if past, else a forecast long enough to reach it (max 5 days)."""
+    from datetime import date as _d
+    from zoneinfo import ZoneInfo
+    from datetime import datetime
+    today = datetime.now(ZoneInfo(TZ)).date()
+    target = _d.fromisoformat(date)
+    if target < today:
+        return fetch_archive(lat, lon, date, date).get(date, {})
+    days = min(max((target - today).days + 1, 1), 5)
+    return fetch_hourly(lat, lon, forecast_days=days).get(date, {})
+
+
 if __name__ == "__main__":
     # CHANGE ME: your school's coordinates.
     data = fetch_hourly(26.85, 80.95)

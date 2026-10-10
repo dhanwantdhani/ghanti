@@ -222,7 +222,7 @@ async function viewTomorrow() {
   $("#where").innerHTML = `<div style="text-align:right"><span class="tag live">Live</span><div class="muted" style="font-size:13px;margin-top:6px">${esc(school.name || "")}, ${esc(school.city || "")}</div></div>`;
   $("#app").innerHTML = `
     <section class="hero">
-      <div class="head"><h2>${esc(data.date)}: tomorrow's call</h2><span class="sub">${school.illustrative ? "Illustrative timetable at a real location; " : ""}real forecast, real monitors</span></div>
+      <div class="head"><h2>${esc(data.date)}: ${data.date > new Date().toISOString().slice(0,10) ? "tomorrow's call" : "the latest call"}</h2><span class="sub">${school.illustrative ? "Illustrative timetable at a real location; " : ""}real forecast, real monitors</span></div>
       ${dayStrip(hourly, calls, minutesBySlot)}
     </section>
     <div class="tiles">
@@ -236,7 +236,12 @@ async function viewTomorrow() {
     <h3 class="section">What the teacher received</h3>
     <div class="row">
       <div class="phone"><div class="app">Telegram · Ghanti</div><div class="bubble">${esc(msg)}<span class="btn">Confirm or object</span></div></div>
-      <div class="panel" style="flex:1;min-width:300px"><h4>Ledger</h4>${ledgerTable(rows)}</div>
+      <div style="flex:1;min-width:300px">
+        <div class="panel"><h4>Ledger</h4>${ledgerTable(rows)}</div>
+        <div class="panel" style="margin-top:12px"><h4>How this call was made</h4>
+          <ol style="margin:0;padding-left:18px;font-size:13px;color:var(--ink2)">${(data.trace || []).map((t) => `<li>${esc(t)}</li>`).join("") || "<li>Trace not recorded for this date.</li>"}</ol>
+          <p class="muted" style="font-size:12px;margin:8px 0 0">A Strands agent on Amazon Nova Lite calls the forecast tool and the rules tool, then writes the two-sentence summary. The per-slot lines come from the rules; the agent cannot change a call.${data.issued ? " Forecast fetched " + esc(data.issued) + "." : ""}</p></div>
+      </div>
     </div>
     ${sources(school, data.forecast ? "issued for " + esc(data.date) : null)}`;
   wireTips();

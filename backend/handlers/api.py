@@ -50,10 +50,17 @@ def handler(event, context=None):
         date = qs.get("date") or tomorrow()[0]
         calls = store.get_calls(live_school_id(), date)
         if not calls and not qs.get("date"):
-            date = today()[0]
-            calls = store.get_calls(live_school_id(), date)
+            # no plan for tomorrow (weekend or not yet 6 PM): show the latest planned day
+            import datetime as _dt
+            for back in range(0, 8):
+                date = (_dt.date.fromisoformat(tomorrow()[0]) - _dt.timedelta(days=back)).isoformat()
+                calls = store.get_calls(live_school_id(), date)
+                if calls:
+                    break
+        item = store.get_forecast_item(live_school_id(), date) or {}
         return _resp(200, {"date": date, "calls": _public(calls),
-                           "forecast": store.get_forecast(live_school_id(), date)})
+                           "forecast": {int(h): float(v) for h, v in (item.get("hourly") or {}).items()} or None,
+                           "issued": item.get("issued"), "trace": item.get("trace") or []})
     if path == "/ledger":
         return _resp(200, {"ledger": store.get_ledger(live_school_id())})
     if path == "/replay":

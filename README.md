@@ -24,7 +24,8 @@ In a North Indian winter the school day starts in the dirtiest air of the day. S
 | Part | State |
 |---|---|
 | Hourly station recorder | Live since Oct 9 14:00 IST; 31 readings stored (1 same-hour, 30 archive) |
-| 6 PM call to Telegram, written by Amazon Nova | Live; first real call sent Oct 9 for Oct 10 (all five slots OUTDOORS, 54-58 ug/m3) |
+| 6 PM call to Telegram | Live; first real call sent Oct 9 for Oct 10 (all five slots OUTDOORS, 54-58 ug/m3) |
+| Strands agent (Nova Lite) plans the day | Live since Oct 10: calls get_forecast and decide_calls tools, writes the two-sentence summary; the rules write the per-slot lines; deterministic fallback if it fails |
 | Teacher reply and re-plan | Live |
 | 6 AM re-check | Scheduled; first run Oct 10 |
 | 3 PM verify and ledger | Scheduled; first run Oct 10 |
@@ -40,7 +41,7 @@ In a North Indian winter the school day starts in the dirtiest air of the day. S
 - **Station, archive:** DTU, New Delhi (CPCB), 3.0 km from the school, via OpenAQ, hourly averages. For India these arrive one to two days late (43 hours on Oct 9) and then replace the same-hour values in the ledger.
 - **Bands:** India's NAQI PM2.5 breakpoints (a 24-hour standard) applied to hourly values. A simplification, said on screen. Children up to age 10 get the stricter rule in the 61-90 band.
 - **Breathing rates:** US EPA Exposure Factors Handbook, chapter 6, ages 6 to under 11. Indoor factor 0.7 is an assumption.
-- **The call is rules** (`backend/ghanti/rules.py`, 13 unit tests). Amazon Nova only writes the message and never changes a call; if it fails, a template is used and logged.
+- **The call is rules** (`backend/ghanti/rules.py`, 14 unit tests). A Strands agent on Amazon Nova Lite fetches the forecast and asks the rules through tools, then writes the opening of the message; the per-slot lines are generated from the rules, so the message cannot contradict a call. If the agent fails, the deterministic path and a template are used and the trace says so. The trace is shown on the page.
 
 ## Run it
 
@@ -68,7 +69,7 @@ flowchart LR
   S4[EventBridge Scheduler<br/>15:00 IST] --> V[Lambda verify]
   R --> |WAQI same-hour, OpenAQ archive| D[(DynamoDB<br/>Schools, Calls, Readings)]
   P --> |Open-Meteo forecast| D
-  P --> N[Amazon Bedrock<br/>Nova Lite writes the message]
+  P --> N[Strands agent<br/>Amazon Bedrock Nova Lite<br/>tools: get_forecast, decide_calls]
   P --> T[Telegram bot]
   C --> D
   V --> D

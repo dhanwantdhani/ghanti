@@ -50,11 +50,16 @@ def put_school(school):
 
 # Calls, forecasts, tokens, ledger -------------------------------------
 
-def put_forecast(school_id, date, hourly, issued):
+def put_forecast(school_id, date, hourly, issued, trace=None):
     _table("CALLS_TABLE").put_item(Item=_clean({
         "school_id": school_id, "sk": f"forecast#{date}",
-        "hourly": {str(h): v for h, v in hourly.items()}, "issued": issued,
+        "hourly": {str(h): v for h, v in hourly.items()}, "issued": issued, "trace": trace or [],
     }))
+
+
+def get_forecast_item(school_id, date):
+    item = _table("CALLS_TABLE").get_item(Key={"school_id": school_id, "sk": f"forecast#{date}"}).get("Item")
+    return _plain(item) if item else None
 
 
 def get_forecast(school_id, date):
