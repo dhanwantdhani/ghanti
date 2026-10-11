@@ -31,11 +31,11 @@ In a North Indian winter the school day starts in the dirtiest air of the day. S
 |                                                               |
 | THE PLAN   Next school day: Monday, 12 October                |
 |   "Of 5 outdoor periods: 1 goes ahead but kept short, 4 go    |
-|    ahead as planned. Air 52 to 67 ug/m3, Satisfactory to      |
-|    Moderate."   [63][66][67][65][62][57][57][54][53][52][52]  |
+|    ahead as planned. Air 55 to 76 ug/m3, Satisfactory to      |
+|    Moderate."   [72][76][70][62][59][56][55][55][54][54][54]  |
 |                                                               |
 | PERIOD BY PERIOD                                              |
-|   07:50  Morning assembly  ... why ...      Go outdoors  67   |
+|   07:50  Morning assembly  ... why ...      Go outdoors  73   |
 |   08:30  PE, Class 2B      ... why ...      Outdoors, short   |
 |   > Hour-by-hour picture (expand)                             |
 |                                                               |
@@ -50,16 +50,16 @@ In a North Indian winter the school day starts in the dirtiest air of the day. S
 - **Try your school** (`/#/try`): any coordinates and periods, a date picker, a one-tap smog day (12 Nov 2025). Same rules, live forecast, nothing stored.
 - **A smog week** (`/#/replay`): the same school on 10-14 Nov 2025, modelled air, computed live when the page opens. Labelled as a replay.
 
-## Status (updated Oct 10, 2026, 16:00 IST)
+## Status (updated Oct 11, 2026, 21:50 IST)
 
 | Part | State |
 |---|---|
-| Hourly station recorder | Live since Oct 9 14:00 IST; 52 readings stored (22 same-hour, 30 archive) |
-| 6 PM call to Telegram | Live; Oct 9 for Oct 10 (all outdoors), Oct 10 for Monday Oct 12 (one period kept short) |
+| Hourly station recorder | Live since Oct 9 14:00 IST; 80 readings stored (50 same-hour, 30 archive) |
+| 6 PM call to Telegram | Live; three runs: Oct 9 for Oct 10 (all outdoors), Oct 10 and Oct 11 for Monday Oct 12 (one period kept short) |
 | Strands agent (Nova Lite) plans the day | Live since Oct 10: calls get_forecast and decide_calls tools, writes the opening; the rules write the per-period lines; prose that contradicts a call is dropped and the trace says so; deterministic fallback if the agent fails |
 | Teacher reply and re-plan | Live |
-| 6 AM re-check | Live; first run Oct 10 06:10, no change needed |
-| 3 PM verify and ledger | Live; first run Oct 10 15:00: 5 calls checked, 5 right (forecast 53-59, measured 49-63) |
+| 6 AM re-check | Live; ran Oct 10 and Oct 11 at 06:10, no change needed |
+| 3 PM verify and ledger | Live; Oct 10 15:00: 5 calls checked, 5 right (forecast 53-59, measured 49-63); Oct 11: nothing to check, no periods on Sunday |
 | School timetable | Illustrative (typical Delhi school day); real location, Rohini Sector 9, Delhi |
 | Replay week | Modelled air (CAMS), Nov 10-14 2025, 23 periods, 8 moves, 4 indoors; labelled on screen |
 | Try your school (sandbox) | Live, stateless, any coordinates, no model call |
