@@ -27,7 +27,7 @@ In a North Indian winter the school day starts in the dirtiest air of the day. S
 | [Tomorrow's plan] [Try your school] [A smog week]             |
 |                                                               |
 | 1. 6 PM forecast   2. one call per period   3. 3 PM check     |
-| Running live for Demo Public School, Rohini. Built on AWS ... |
+| Running live for Sector 9 Public School, Rohini. Built on ... |
 |                                                               |
 | THE PLAN   Next school day: Monday, 12 October                |
 |   "Of 5 outdoor periods: 1 goes ahead but kept short, 4 go    |

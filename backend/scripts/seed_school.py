@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 # teacher shares theirs.
 SCHOOL = {
     "school_id": "demo-school",
-    "name": "Demo Public School, Rohini",
+    "name": "Sector 9 Public School, Rohini",
     "city": "Delhi",
     "lat": 28.7234,
     "lon": 77.1123,

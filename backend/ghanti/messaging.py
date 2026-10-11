@@ -102,4 +102,4 @@ if __name__ == "__main__":
         {"slot_id": "assembly", "label": "Morning assembly", "start": "07:50", "forecast_pm25": 146, "band": "Very Poor", "call": "MOVE", "move_to": "13:20"},
         {"slot_id": "pe_2b", "label": "PE, Class 2B", "start": "08:30", "forecast_pm25": 131, "band": "Very Poor", "call": "INDOORS", "move_to": None},
     ]
-    print(template_text("Demo Public School", "2026-10-10", calls, "https://example.com/#/t/abc"))
+    print(template_text("Sector 9 Public School, Rohini", "2026-10-10", calls, "https://example.com/#/t/abc"))
