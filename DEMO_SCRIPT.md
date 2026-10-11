@@ -17,7 +17,7 @@ Browser at 125% zoom, bookmarks bar hidden, only one tab. Open `#/replay` once b
 
 **Screen:** `https://main.d3brqy16xi3d2g.amplifyapp.com/` top of page. Do not scroll. The question and the three steps are visible.
 
-**Say:** "Ten to eight, morning assembly, four hundred children outside. On a November day at this school: one hundred and twelve micrograms at eight, sixty-nine at one. Same day. Ghanti moves the period."
+**Say:** "Ten to eight, assembly, four hundred children outside. On a November day at this school: one hundred and twelve micrograms at eight, sixty-nine at one. Same day. Ghanti moves the period."
 
 ## 0:12 The smog day (23 s)
 
@@ -25,7 +25,7 @@ Browser at 125% zoom, bookmarks bar hidden, only one tab. Open `#/replay` once b
 
 **Point at:** the orange band (112, 112, 108), then the rows in order. Say the number on each row as you point at it.
 
-**Say:** "Here is that day, period by period. Assembly: one hundred and twelve, Poor. It moves to twenty past one, where it is sixty-nine. Junior PE at half past eight, thirty-eight seven-year-olds: one hundred and ten, indoors. Recess: ninety-two, indoors. Senior PE: eighty-seven, outdoors but kept short. Every number and every reason is on the row."
+**Say:** "Here is that day, period by period. Assembly: one hundred and twelve, Poor. It moves to twenty past one, where it is sixty-nine. Junior PE at half past eight, thirty-eight seven-year-olds: one hundred and ten, indoors. Recess: ninety-two, indoors. Senior PE: eighty-seven, kept short. The reason is on every row."
 
 ## 0:35 Tonight's real call (20 s)
 
